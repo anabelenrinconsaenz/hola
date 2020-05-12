@@ -6,14 +6,15 @@ use App\Descuento;
 use App\Talonario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Mail;
 
 class TalonarioController extends Controller
 {
     public function show()
     {
-        $tal=Talonario::all();
+        $talonario=Talonario::all();
      
-        return view('talonarios')->with('talonario',$tal);;
+        return view('talonarios')->with('talonario',$talonario);
     }
 
     
@@ -22,49 +23,46 @@ class TalonarioController extends Controller
         return view('altaTalonario'); 
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $tipoDescuento=DB::table('tipo_descuento')->select('*')->get();
-        return view('descuento.crear')->with('tipoDescuento',$tipoDescuento);
-        //return view('descuento.crear');
+        $datosTalonario=request()->all();
+        Talonario::insert($datosTalonario);
+        return redirect('talonario');
        
     }
 
     public function modificar($ID)
     {
-        /*$data['tipoDescuento']=DB::table('tipo_descuento')->select('*')->get();
-        $data['descuento']=DB::table('descuento')->where('idDescuento', $ID)->select('*')->get();
-        return view('descuento.modificar')->with('data',$data); */ 
-
-        $descuento=DB::table('descuento')->where('idDescuento', $ID)->select('*')->get();
-        //$datos=DB::table('libro')->where('ISBN', $isbn)->select('cant_deposito','cant_venta')->get();
-        foreach($descuento as $d){
-            $data["idDescuento"]=$d->idDescuento;
-            $data["ISBN"]=$d->ISBN;
-            $data["fecha_inicio"]=$d->fecha_inicio;
-            $data["fecha_final"]=$d->fecha_final;
-            $data["porcentaje"]=$d->porcentaje;
-            $data["descripcion"]=$d->descripcion;
-        }   
-        //return response()->json($data);
-        return view('descuento.modificar')->with('data',$data); 
+        
     }
 
-    public function modificarAlta (Request $request){
-
-    }
-
-    public function buscarDes(Request $request){
+    public function enviarMailFacturacion ($ID){
        
+        //codigo enviar la notificacion
+        /*$id=1;
+        $recibos=\DB::table('recibo')
+        ->join('libroxventa', 'libroxventa.idVenta', '=', 'recibo.idVenta')
+        ->join('venta', 'venta.idVenta', '=', 'recibo.idVenta')
+        ->select('*')
+        ->where('recibo.talonario_id_talonario', '=',$ID)
+        ->get();
+        foreach($recibos as $re){
+            $info[$id]["total"]=$re->total;
+            $id++;
+        }//ver bien como obtner el titulo del libro y los datos de cliente
+        
+        //return response()->json($notificaciones);
+        
+        
+        Mail::send('mailFacturacion',['info'=> $info], function ($message) {
+            $message->from('libreriarectorado@gmail.com');
+            $message->subject('Facturacion Libreria Rectorado General Pico');
+            $message->to('libreriarectorado@gmail.com');
+        });  */
+        return redirect('talonario');
     }
 
-    public function buscarLibros(Request $request){
-
-    }
-
-    public function vistaRegistrarDescuento ($ID){
-       
-    }
+    
 
     public function update(Request $request, Descuento $descuento)
     {

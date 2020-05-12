@@ -1,6 +1,6 @@
 @include('layout')
 <div align="right" style="margin-left: 50px;margin-right: 50px;margin-top: 10px;">
-<a href="/agregarTalonario">
+<a href="agregarTalonario">
    <img src="{{asset('imagen/add-file (1).png')}}" width="64" height="64" >
   </a>
   </div>
@@ -24,7 +24,7 @@
           <td>{{$tal->id_talonario}}</td>
          <td>{{$tal->nro_inicio}}</td>
          <td>{{$tal->nro_fin}}</td>
-          <td>  <a data-toggle="modal" href="" style="text-decoration:none;color:black;">
+          <td>  <a  href="talonario/mailFacturacion/{{$tal->id_talonario}}" style="text-decoration:none;color:black;">
                     <i class='fas fa-envelope-open-text' style='color:#337ab7;'>
                         <font face="Arial" size="2">
                             Enviar Mail

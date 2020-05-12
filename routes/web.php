@@ -138,7 +138,9 @@ Route::get('descuento/eliminar/alta','DescuentoController@show');
 
 //FACTURACION
 Route::get('reciboAlta','VentaController@insertVenta');
+Route::get('talonario/mailFacturacion/{ID}','TalonarioController@enviarMailFacturacion');
 
 //TALONARIOS
 Route::get('talonario','TalonarioController@show');//Mostrar
-Route::get('agregarTalonario','TalonarioController@store');//Agregar
+Route::get('agregarTalonario','TalonarioController@store');//FormAgregar
+Route::get('agregarTalonario/alta','TalonarioController@create');//Agregar

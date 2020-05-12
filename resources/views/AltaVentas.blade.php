@@ -32,6 +32,8 @@
 
 							<td class="bg-light border-bottom border-gray rounded text-center px-2" style="font-size:13px" id="ISBNlibro">{{$libro->ISBN}} </td>
 							<td style="visibility: hidden">{{$libro->precio_general}}</td>
+							<td style="visibility: hidden">{{$libro->precio_docente}}</td>
+
 							<td style="text-align:center">{{$libro->titulo}} </td>
 							<td style="visibility: hidden">{{$libro->cant_venta}}</td>
 							<td style="visibility: hidden">{{$libro->precio_estudiante}}</td>
@@ -74,6 +76,9 @@
 						<td name="nombre" style="text-align:center">{{$cliente->nombre_apellido}}</td>
 						<td name="domicilio" style="text-align:center">{{$cliente->domicilio}}</td>
 						<td name="telefono" style="text-align:center">{{$cliente->telefono}}</td>
+						<td name="telefono" style="text-align:center">{{$cliente->id_tipo_cliente}}</td>
+						
+
 						<td style=" text-align:center">
 							<button value="elegirCliente" title="elegirCliente" class="btn btn-primary elegirCliente" aling="right">
 								<i class="fa fa-check-square-o" aria-hidden="true"></i>
@@ -95,7 +100,7 @@
 
 <!-- CON ESTA TABLA ENVIO TODOS LOS DATOS DE LA VENTA (FORM)-->
 
-	<form id="form-compra" action="/InsertVenta" type="POST"> 
+	<form id="form-compra" action="/InsertVenta" type="GET"> 
 
 		<!-- LIBROS -->
 		<table class="table table-striped tablaVenta mb-5" id="tablaVenta">
@@ -105,7 +110,13 @@
 					<th scope="col">Titulo</th>
 					<th scope="col">Precio estudiante</th>
 					<th scope="col">Precio general</th>
+					<th scope="col">Precio docente</th>
 					<th scope="col">Cantidad</th>
+					<th scope="col">Descuento</th>
+
+
+
+					
 				</tr>
 			</thead>
 			
@@ -125,6 +136,8 @@
 					<th scope="col">Fecha</th>
 					<th scope="col">Condicion</th>
 					<th scope="col">Lugar</th>
+					<th scope="col">tipo cliente</th>
+
 				</tr>
 			</thead>
 			<tbody>
@@ -132,6 +145,8 @@
 			</tbody>
 			
 		</table>
+
+
 		
 		<div id="alerta"></div>
 
@@ -149,6 +164,11 @@
 
 
 <script>
+
+
+
+
+
 
 //BUSCADOR EN TIEMPO REAL LIBROS
 
@@ -170,6 +190,8 @@ window.addEventListener("load",function(){
 });
 
 
+
+
 $(document).on('click','.btn-cargar', function(e){
 	e.preventDefault(); //evita que se recargue la pagina
 
@@ -177,25 +199,37 @@ $(document).on('click','.btn-cargar', function(e){
 
 	ISBN=$(this).parent().parent().children("td:eq(0)").text(); //estoy posicionada en el boton, el padre es el TD y luego el TR, luego para obtener solo el ISBN pongo el resto
 	precio_general=$(this).parent().parent().children("td:eq(1)").text(); 
-	titulo=$(this).parent().parent().children("td:eq(2)").text(); 
-	cant_venta=$(this).parent().parent().children("td:eq(3)").text(); 
-	precio_estudiante=$(this).parent().parent().children("td:eq(4)").text(); 
-	cant_deposito=$(this).parent().parent().children("td:eq(5)").text(); 
 
-	cant_libros= parseInt(cant_venta)+parseInt(cant_deposito);
+	precio_docente=$(this).parent().parent().children("td:eq(2)").text(); 
 
-	agregarFila(ISBN,titulo,precio_estudiante,precio_general,cant_libros);
+
+	titulo=$(this).parent().parent().children("td:eq(3)").text(); 
+	cant_venta=$(this).parent().parent().children("td:eq(4)").text(); 
+	precio_estudiante=$(this).parent().parent().children("td:eq(5)").text(); 
+	cant_deposito=$(this).parent().parent().children("td:eq(6)").text(); 
+
+	cant_libros=parseInt(cant_deposito);
+
+	agregarFila(ISBN,titulo,precio_estudiante,precio_general,cant_libros,precio_docente);
 });
 
 
-function agregarFila(ISBN, titulo,precio_estudiante,precio_general,cant_libros) {
+function agregarFila(ISBN, titulo,precio_estudiante,precio_general,cant_libros,precio_docente) {
    
    	var htmlTags = '<tr>'+
-  		'<td><input class="form-control" type="text" name="ISBNtabla[]" value="'+ISBN+'" readonly></td>'+ 
-  		'<td><input class="form-control" type="text" name="TITULOtabla[]" value="'+titulo+'" readonly></td>'+ 
-  		'<td><input class="form-control" type="number" name="PRECIO_ESTUDIANTEtabla[]" value="'+precio_estudiante+'" readonly></td>'+ 
-  		'<td><input class="form-control" type="number" name="PRECIO_GENERALtabla[]" value="'+precio_general+'" readonly></td>'+ 
-		'<td><input type="number" name="CANTIDADtabla[]"  class="form-control" min="1" max="'+cant_libros+'" required></td>'+
+  		'<td><input class="form-control" style="width :110px; font-size:13px" type="text" name="ISBNtabla[]" value="'+ISBN+'" readonly></td>'+ 
+  		'<td><input class="form-control" style="width :250px; font-size:13px" type="text" name="TITULOtabla[]" value="'+titulo+'" readonly></td>'+ 
+  		'<td><input class="form-control subtotal" style="width :100px; font-size:13px" type="number" name="PRECIO_ESTUDIANTEtabla[]" value="'+precio_estudiante+'" readonly></td>'+ 
+  		'<td><input class="form-control subtotal" style="width :100px; font-size:13px" type="number" name="PRECIO_GENERALtabla[]" value="'+precio_general+'" readonly></td>'+ 
+		'<td><input class="form-control subtotal" style="width :100px; font-size:13px" type="number" name="PRECIO_DOCENTEtabla[]" value="'+precio_docente+'" readonly></td>'+ 
+		'<td><input type="number" name="CANTIDADtabla[]" style="width :100px; font-size:13px" class="form-control" min="1" max="'+cant_libros+'" required></td>'+
+		'<td><select id="idDescuento" name="idDescuento[]" class="form-control" style="width :200px; font-size:13px" required>'+
+		@foreach($descuentos as $descuento)
+			@if($descuento->fecha_inicio<= now()->toDateString() && ($descuento->fecha_final>=now()->toDateString() || $descuento->idtipo_descuento==2 || $descuento->idtipo_descuento==3))
+     		'<option value={{$descuento->idDescuento}}>{{ $descuento->porcentaje}}%  {{ $descuento->descripcion }} - {{ $descuento->idtipo_descuento }}</option>'+
+			@endif
+	 	@endforeach
+ '</select></td>'+
 		'<td><button type="button" class="btn btn-danger btn-quitarLibro"><i class="fa fa-times"></i></button></td>'+
 		'</tr>';
       
@@ -245,14 +279,21 @@ $(document).on('click','.elegirCliente', function(e){
 	domicilio=$(this).parent().parent().children("td:eq(2)").text(); 
 
 	telefono=$(this).parent().parent().children("td:eq(3)").text(); 
+	id_tipo_cliente=$(this).parent().parent().children("td:eq(4)").text(); 
 
 
-agregarFilaCliente(dni,nombre,domicilio,telefono);
+
+
+
+
+
+
+agregarFilaCliente(dni,nombre,domicilio,telefono,id_tipo_cliente);
 
 });
 
 
-function agregarFilaCliente(dni,nombre,domicilio,telefono){
+function agregarFilaCliente(dni,nombre,domicilio,telefono,id_tipo_cliente){
    
 	var fecha = new Date(); //Fecha actual
 	var mes = fecha.getMonth()+1;
@@ -273,6 +314,7 @@ function agregarFilaCliente(dni,nombre,domicilio,telefono){
 		'<td><input class="form-control" type="date" name="fecha" value="'+anio+'-'+mes+'-'+dia+'" required></td>'+ 
 		'<td><input class="form-control" type="text" name="condicion" required></td>'+ 
 		'<td><input class="form-control" type="text" name="lugar" required></td>'+ 
+		'<td><input class="form-control" type="text" name="id_tipo_cliente" value="'+id_tipo_cliente+'" readonly></td>'+ 
 		'<td><button type="button" class="btn btn-danger btn-quitarCliente"><i class="fa fa-times"></i></button></td>'+
       '</tr>';
       
@@ -308,6 +350,12 @@ window.addEventListener("load",function(){
 		}
 	})
 })
+
+
+
+
+
+
 
 </script>
 

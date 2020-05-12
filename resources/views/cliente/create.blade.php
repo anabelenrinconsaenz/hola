@@ -11,7 +11,7 @@
                     <label for="id"> Apellido y Nombre o Razon Social </label>
                 </div>
                 <div class="col-75">
-                    <input type="text" id="nombre_apellido" name="nombre_apellido">
+                    <input type="text"s id="nombre_apellido" name="nombre_apellido">
                 </div>
             </div>
             <div class="row">

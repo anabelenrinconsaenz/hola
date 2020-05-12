@@ -26,14 +26,15 @@
                      </tbody>
                    </table>
 
-      fecha:        {{$nuevaVenta->fecha}}  
+      fecha:        {{$nuevaVenta->fecha}}<br>  
+      total:        {{$total}}<br>
         
         @foreach ($info as $fila)
             <tr>
-            <td><h4>{{$fila["ISBN"]}}</h4><br></td>
+            ISBN:<td><h4>{{$fila["ISBN"]}}</h4><br></td>
             
-            <td><h4>{{$fila["cantidad"]}}</h4><br></td>
-            @foreach($fila["titulo"] as $ti)
+            CANTIDAD:<td><h4>{{$fila["cantidad"]}}</h4><br></td>
+            TITULO:@foreach($fila["titulo"] as $ti)
 
             <td><h4>{{$ti->titulo}}</h4><br></td>
             @endforeach

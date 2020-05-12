@@ -4,7 +4,7 @@
         <div class=" container ">
         <h1> Agregar Talonario </h1>
         <BR>
-            <form action="{{url('')}}" method="get">
+            <form action="agregarTalonario/alta">
             
 
                 <div class="row">
@@ -37,8 +37,8 @@
                 
                 <br>
                  <div align="right" style="margin-top: 10px;">
-                        <button type="button" class="btn btn-success"   id="btnAgregar" >Agregar</button>
-                    </div>
+                       <button type="submit" class="btn btn-primary btn-lg btn-block">Agregar</button>
+                </div>
             </form>
            
         </div>
