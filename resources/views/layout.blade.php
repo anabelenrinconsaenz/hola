@@ -140,7 +140,11 @@ ALTA, BAJA Y MANTENIMIENTO DE LIBROS
                         Descuento
                       </a>
                     </li>
-                   
+                   <li>
+                      <a class="nav-link font-weight-bold" href="/talonario"style="width: 125px">
+                        Talonarios
+                      </a>
+                    </li>
                    <li class="nav-item dropdown" >
                       <a class="nav-link font-weight-bold" href="{{url('notificaciones')}}" style="width: 125px">
                         <i class="fa fa-bell-o"></i>
