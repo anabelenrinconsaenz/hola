@@ -127,7 +127,7 @@ public function buscadorCliente(Request $request){
         ->select('*')
         ->join('tipo_cliente', 'tipo_cliente.id_tipo_cliente', '=', 'cliente.id_tipo_cliente')
         ->join('tipo_facultad', 'tipo_facultad.id_tipo_facultad', '=', 'cliente.id_tipo_facultad')
-        ->paginate(5);
+        ->paginate(2);
     
         return view('cliente.show')->with('clientes',$clientes);
         

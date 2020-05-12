@@ -12,8 +12,8 @@ use Illuminate\Http\Request;
 
 
 use App\LibroxVenta;
-
-
+use App\Talonario;
+$numeroActual;
 class VentaController extends Controller
 {
     /**
@@ -217,11 +217,11 @@ return redirect('/todasVentas');
         ]);
 
        
-//INSERTO LIBRO X VENTA
-
+        //INSERTO LIBRO X VENTA
+        $i=0;
         foreach ($request->ISBNtabla as $key => $id) 
         {
-            
+           
             $libro = new LibroxVenta();
             $libro->ISBN=$id;
             $libro->idVenta=$idVenta;
@@ -233,11 +233,30 @@ return redirect('/todasVentas');
             'idVenta' => $libro->idVenta, 
             'cant' => $libro->cant, 
             ]);
-
+            $titulo=\DB::table('libro')->select('titulo')->where("ISBN","=",$libro->ISBN)->get();
+            $info[$i]["ISBN"]=$id;
+            $info[$i]["titulo"]=$titulo;
+            $info[$i]["cantidad"]=$request->CANTIDADtabla[$key];
+            $i++;
+            
 
         }
-
-        return redirect('/todasVentas');
+        //busco los datos sdel cliente
+        $cliente=\DB::table('cliente')->select('*')->where("dni_cuit","=",$nuevaVenta->Cliente_dni_cuit)->get();
+        //table('cliente')->select('dni_cuit','nombre_apellido','domicilio','telefono','email')->where('nombre_apellido','=',$cli)->get();
+        
+        //cargo el recibo con los datos que corresponden 
+        return view('recibo.alta')->with('nuevaVenta',$nuevaVenta)->with('info',$info)->with('cliente',$cliente);
+        
+        //info lo tenes que recorrer como el array de notificacion para el cuerpo del mail, depues nuevaVenta 
+        //es una objeto comun. $nuevaVenta tiene:fecha, y dni_cuit del cliente.
+        //info tiene los ISBN, y la cantidad
+        // y $cliente tiene todos los datos de cliente.
+        //faltaria ponerle el numero de recibo pero primero lo tiene que ingresar desde la seccion
+        //return response()->json($info);
+     
+        //$talonario=\DB::table('talonario')->select('*')->get()->last();
+        //return response()->json($talonario);
 
     }
 

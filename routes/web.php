@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -10,8 +11,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-use Illuminate\Support\Facades\Route;
-//probandooooo 
 Route::get('/', 'ClienteController@index');
 
 Route::get('cliente','ClienteController@show');
@@ -134,3 +133,7 @@ Route::get('descuento/eliminar/{ID}','DescuentoController@destroy');
 //EJECUTAR ELIMINACION DEL DESCUENTO
 Route::get('descuento/eliminar/alta','DescuentoController@show');
 
+
+
+//FACTURACION
+Route::get('reciboAlta','VentaController@insertVenta');

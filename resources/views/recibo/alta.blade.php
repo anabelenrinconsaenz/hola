@@ -1,10 +1,6 @@
-@extends('welcome')
-@section('content')
-<h1> Seleccione el cliente a modificar </h1>
-<div class=" container ">
-<div class="row d-flex justify-content-center">
-<form>
-                   <table class="table table-bordered">
+
+@include('layout')
+<table class="table table-bordered">
                      <thead class="thead-dark">
                        <tr>
                          <th scope="col">DNI o CUIT</th>
@@ -12,8 +8,6 @@
                          <th scope="col">Domicilio</th>
                          <th scope="col">Teléfono</th>
                          <th scope="col">Email</th>
-                         <th scope="col">Acción</th>
-     
                        </tr>
                      </thead>
                      <tbody>
@@ -25,20 +19,24 @@
                          <td>{{$cli->domicilio}}</td>
                          <td>{{$cli->telefono}}</td>
                          <td>{{$cli->email}}</td>
+                     
                          
-                            <td>
-                                <div style=" margin-top: 10px; ">
-                                    <button><a href="{{ url ('cliente/edit/editar/modificar',[$cli->nombre_apellido]) }}">Modificar</a></button>
-                                </div>  
-                            </td>
-                        
                        </tr>
                       @endforeach
                      </tbody>
                    </table>
-                   </form>
-                 </div>
-              
+
+      fecha:        {{$nuevaVenta->fecha}}  
         
-    
-@endsection
+        @foreach ($info as $fila)
+            <tr>
+            <td><h4>{{$fila["ISBN"]}}</h4><br></td>
+            
+            <td><h4>{{$fila["cantidad"]}}</h4><br></td>
+            @foreach($fila["titulo"] as $ti)
+
+            <td><h4>{{$ti->titulo}}</h4><br></td>
+            @endforeach
+            
+            </tr>
+        @endforeach             
