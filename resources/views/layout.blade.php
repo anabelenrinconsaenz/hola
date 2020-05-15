@@ -14,7 +14,11 @@ ALTA, BAJA Y MANTENIMIENTO DE LIBROS
         <script src="js/jquery-3.3.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
         <style>
-        
+        <style>
+
+          .etiq {
+              
+            }
             .menu {
                 width: 96%;
                 margin: auto;
