@@ -10,7 +10,8 @@
 									<td style="font-size:11px; text-align:center" class="informacion">{{$l->ISBN}} </td>
 									<td style="visibility: hidden" class="informacion">{{$l->precio_general}}</td>
 
-								
+									<td style="visibility: hidden" class="informacion">{{$l->precio_docente}}</td>
+
 									<td style=" text-align:center" class="informacion">{{$l->titulo}} </td>
 									<td style="visibility: hidden" class="informacion">{{$l->cant_venta}}</td>
 

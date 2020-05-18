@@ -307,14 +307,14 @@ function agregarFilaCliente(dni,nombre,domicilio,telefono,id_tipo_cliente){
 	}
 
    var htmlcliente = '<tr>'+
-  		'<td><input class="form-control" type="number" name="dni" value="'+dni+'" readonly></td>'+ 
-  		'<td><input class="form-control" type="text" name="nombre" value="'+nombre+'" readonly></td>'+ 
-  		'<td><input class="form-control" type="text" name="domicilio" value="'+domicilio+'" readonly></td>'+ 
-  		'<td><input class="form-control" type="text" name="telefono" value="'+telefono+'" readonly></td>'+ 
-		'<td><input class="form-control" type="date" name="fecha" value="'+anio+'-'+mes+'-'+dia+'" required></td>'+ 
-		'<td><input class="form-control" type="text" name="condicion" required></td>'+ 
-		'<td><input class="form-control" type="text" name="lugar" required></td>'+ 
-		'<td><input class="form-control" type="text" name="id_tipo_cliente" value="'+id_tipo_cliente+'" readonly></td>'+ 
+  		'<td><input class="form-control" style="width :110px; font-size:13px" type="number" name="dni" value="'+dni+'" readonly></td>'+ 
+  		'<td><input class="form-control" style="width :150px; font-size:13px" type="text" name="nombre" value="'+nombre+'" readonly></td>'+ 
+  		'<td><input class="form-control" style="width :110px; font-size:13px" type="text" name="domicilio" value="'+domicilio+'" readonly></td>'+ 
+  		'<td><input class="form-control" style="width :110px; font-size:13px" type="text" name="telefono" value="'+telefono+'" readonly></td>'+ 
+		'<td><input class="form-control" style="width :145px; font-size:13px" type="date" name="fecha" value="'+anio+'-'+mes+'-'+dia+'" required></td>'+ 
+		'<td><input class="form-control" style="width :130px; font-size:13px" type="text" name="condicion" required></td>'+ 
+		'<td><input class="form-control" style="width :130px; font-size:13px" type="text" name="lugar" required></td>'+ 
+		'<td><input class="form-control" style="width :50px; font-size:13px" type="text" name="id_tipo_cliente" value="'+id_tipo_cliente+'" readonly></td>'+ 
 		'<td><button type="button" class="btn btn-danger btn-quitarCliente"><i class="fa fa-times"></i></button></td>'+
       '</tr>';
       

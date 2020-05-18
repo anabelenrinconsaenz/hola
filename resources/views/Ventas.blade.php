@@ -7,12 +7,27 @@
     <h1>Detalle de Venta</h1>
 </div>
 <hr>
+<div class="container" >
+
+
+<div class="row">
+	<div class="col-12" style="text-align: center;">	
+        <!-- BUSCADOR -->
+        <form class="form-inline">
+                <input type="text" id="texto" placeholder="Nombre del cliente" aria-label="Search" name="texto" style="width:1150px; heigth:10px">        
+        </form>
+    </div>
+</div>
+</div>
+        <!-- RESULTADOS DE LA BUSQUEDA -->	
+
+        <div id="resultados" class="my-3">
 
 @foreach($totalVentas as $p)
 <div class="container bg-light border border-dark mt-3">
 
     <div class="form-group col-md-6">
-        <form action="/formulario" type="POST">
+        <form action="/formulario" type="GET">
 
                 <label class="label-detalleVenta">ID VENTA
 
@@ -35,6 +50,19 @@
             <label class="label-detalleVenta">DNI-CUIL</label>
             <input type="text" readonly class="form-control-plaintext input-detalleVenta" value="{{ $p->Cliente_dni_cuit}}">
         </div>
+
+        @foreach($clientes as $cliente)<!-- SACO EL NOMBRE DEL CLIENTE-->
+        
+            @if($cliente->dni_cuit==$p->Cliente_dni_cuit)
+            <div class="form-group col-md-3">
+            <label class="label-detalleVenta">Nombre</label>
+            <input type="text" readonly class="form-control-plaintext input-detalleVenta" value="{{$cliente->nombre_apellido}}">
+            </div>
+
+            @endif
+
+        @endforeach
+
         <div class="form-group col-md-3">
             <label class="label-detalleVenta">Domicilio</label>
             <input type="text" readonly class="form-control-plaintext input-detalleVenta" value="{{$p->lugar}}">
@@ -60,6 +88,8 @@
                 <th scope="col">Cantidad</th>
                 <th scope="col">Descuento</th>
                 <th scope="col">Descripcion descuento</th>
+                <th scope="col">precio unitario</th>
+
 
             </tr>
         </thead>
@@ -90,10 +120,12 @@
                          @endif
 
                     @endforeach
-                </tr>
+               
+                    <td>{{ $i->precio_unitario }}</td>
+            </tr>
             @endif
                 
-
+            
         @endforeach
 
 
@@ -112,3 +144,37 @@
       <br>
       @endforeach
 
+ 
+    </div>
+
+  
+
+      <script>
+
+
+          //BUSCADOR EN TIEMPO REAL CLIENTES
+
+window.addEventListener("load",function(){
+	document.getElementById("texto").addEventListener("keyup",function(){
+
+		if(document.getElementById("texto").value.length>0){
+			fetch(`/clientes/buscadorVentas?texto=${document.getElementById("texto").value}`,{
+				method:'get'
+			})
+			.then(response => response.text())
+			.then(html => {
+				document.getElementById("resultados").innerHTML = html
+			})
+		}else{
+            fetch(`/todasVentas/buscadorAJAX`,{
+				method:'get'
+			})
+			.then(response => response.text())
+			.then(html => {
+				document.getElementById("resultados").innerHTML = html
+			})
+		}
+	});
+});
+
+      </script>

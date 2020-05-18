@@ -33,7 +33,7 @@ class ClienteController extends Controller
 
 //BUSCADOR DE CLIENTE 
 public function buscadorCliente(Request $request){
-    $clientesAJAX=Cliente::where("nombre_apellido","like",$request->texto."%")->take(2)->get();
+    $clientesAJAX=Cliente::where("nombre_apellido","like","%".$request->texto."%")->take(2)->get();
     return view("paginasCliente",compact("clientesAJAX"));
 }
 
@@ -127,7 +127,7 @@ public function buscadorCliente(Request $request){
         ->select('*')
         ->join('tipo_cliente', 'tipo_cliente.id_tipo_cliente', '=', 'cliente.id_tipo_cliente')
         ->join('tipo_facultad', 'tipo_facultad.id_tipo_facultad', '=', 'cliente.id_tipo_facultad')
-        ->paginate(2);
+        ->paginate(5);
     
         return view('cliente.show')->with('clientes',$clientes);
         

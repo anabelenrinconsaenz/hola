@@ -13,7 +13,7 @@ SUBTOTAL Y EL TOTAL VIENE EN 0 NO SE PORQUE-->
 
 <!-- ACA ARRANCA EL FORM PUSE EL ESTILO ACA PORQUE SINO NO ME LO TOMABA-->
 
-    <form  action="" style=" max-width: 60em; height: 40em; background-color:#FDFEA4; ">
+    <form  action="{{ url ('/imprimir') }}" method="GET" style=" max-width: 60em; height: 40em; background-color:#FDFEA4; ">
     
      <div class="row col-xs-12">
       <b><label for="id_recibo" class="col-xs-6" style="margin: 10px  0px   0px   600px;"> RNº </label> </b>
@@ -62,7 +62,7 @@ SUBTOTAL Y EL TOTAL VIENE EN 0 NO SE PORQUE-->
             @foreach($fila["titulo"] as $ti)
             <td style="border: solid 1px #000000; ">{{$ti->titulo}}</td>
             @endforeach
-            <TD style="border: solid 1px #000000; "></TD>
+            <TD style="border: solid 1px #000000; ">{{$fila["precio_unitario"]}}</TD>
             <TD style="border: solid 1px #000000; "></TD>
             </tr>
         @endforeach
@@ -78,9 +78,10 @@ SUBTOTAL Y EL TOTAL VIENE EN 0 NO SE PORQUE-->
         </tbody>
         </TABLE>
         <div align="right" style="margin-top: 10px;">
-                       <button type="submit" class="btn btn-primary" href="{{ url ('',[]) }}">Agregar</button>
+             <button type="submit" class="btn btn-primary btn-lg btn-block">Agregar</button>
          </div>
          <br>
+      
     </form>
  </center>
 

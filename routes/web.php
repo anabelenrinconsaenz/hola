@@ -75,6 +75,9 @@ Route::get('nombresClientes/buscador','ClienteController@buscadorCliente');//nom
 
 //TODAS LAS VENTAS
 Route::get('/todasVentas', 'VentaController@Ventas');
+//BUSCADOR DE CLIENTES X VENTA
+Route::get('/clientes/buscadorVentas','VentaController@buscadorClientexventa');
+Route::get('/todasVentas/buscadorAJAX','VentaController@buscadorTodasVentas');//VUELVO A MOSTRAR TODAS LAS VENTAS
 
 //BORRAR VENTA
 Route::get('formulario', 'VentaController@deleteVenta');
@@ -87,7 +90,7 @@ Route::get('ConfirmarModificacion', 'VentaController@updateVenta');
 //INSERTAR VENTA
 Route::get('InsertVenta', 'VentaController@insertVenta');
 
-//NOTIFICACIONES
+//NOTIFICACIONE
 //CREAR NOTIFICACION
 Route::get('altaNotificacion','LibroController@altaNotificar');
 //MOSTRAR NOTIFICACIONES
@@ -137,10 +140,14 @@ Route::get('descuento/eliminar/alta','DescuentoController@show');
 
 
 //FACTURACION
-Route::get('reciboAlta','VentaController@insertVenta');
+//Route::get('reciboAlta','VentaController@imprimir');
 Route::get('talonario/mailFacturacion/{ID}','TalonarioController@enviarMailFacturacion');
-
+Route::get('guardarRecibo','VentaController@guardarRecibo');
 //TALONARIOS
 Route::get('talonario','TalonarioController@show');//Mostrar
 Route::get('agregarTalonario','TalonarioController@store');//FormAgregar
 Route::get('agregarTalonario/alta','TalonarioController@create');//Agregar
+
+
+
+Route::name('print')->get('/imprimir', 'VentaController@imprimir');

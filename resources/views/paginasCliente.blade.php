@@ -10,6 +10,8 @@
                                             <td  style=" text-align:center" class="informacion">{{$item->nombre_apellido}} </td>
                                             <td  style=" text-align:center" class="informacion">{{$item->domicilio}}</td>
                                             <td  style=" text-align:center" class="informacion">{{$item->telefono}}</td>
+                                            <td  style=" text-align:center" class="informacion">{{$item->id_tipo_cliente}}</td>
+
                                             <td style=" text-align:center">
                                                 <button value="elegirCliente" title="elegirCliente" class="btn btn-primary elegirCliente" name="elegirCliente" aling="right">
                                                     <i class="fa fa-check-square-o" aria-hidden="true"></i>

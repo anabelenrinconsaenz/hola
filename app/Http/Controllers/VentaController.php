@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 
 
+use App\Http\Controllers\DB;
 
 
 use App\LibroxVenta;
@@ -46,9 +47,12 @@ public function Ventas(){//TODAS LAS VENTAS
 
     $Libros['libros']=Libro::all();
 
+    $Clientes['clientes']=Cliente::all();
 
 
-    return view('Ventas')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros);
+
+
+  return view('Ventas')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
 
 }
 
@@ -69,11 +73,15 @@ public function deleteVenta(Request $request){
       $idVenta=$request->idVenta;
       $libroxventa=LibroxVenta::where('idVenta',$idVenta)->get();
       $venta=Venta::where('idVenta',$idVenta)->get(); 
+      $descuentos=Descuento::all();
+      $libros=Libro::all();
 
 
      return view('ModificarVenta', [
         'libroxventa' => $libroxventa,
-        'venta' => $venta
+        'venta' => $venta,
+        'descuentos' => $descuentos,
+        'libros' => $libros
     ]);
 
     }
@@ -112,49 +120,64 @@ public function updateVenta(Request $request){ //MODIFICO VENTAS
 
 //calculo el nuevo total
 $dni= $request->get('dni_cuit');
-$cliente = new Cliente();
 
 $cliente=Cliente::where('dni_cuit',$dni)->get();
 
 $subtotal;
 $total=0;
 
-    if($cliente->id_tipo_cliente==1){ //GENERAL
         foreach ($request->ISBN as $key => $id){
-            $libro=Libro::where('ISBN',$id)->get();
         
-                $idDescuento=$request->idDescuento[$key];
-                $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
-                $subtotal=$libro->precio_general*$request->CANTIDADtabla[$key];
-                $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
-        }
-        
-    }else if($cliente->id_tipo_cliente==2){ //ESTUDIANTE
-        foreach ($request->ISBN as $key => $id){
-                $libro=Libro::where('ISBN',$id)->get();
-            $idDescuento=$request->idDescuento[$key];
+            $idDescuento=$request->IdDescuento[$key];
             $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
-            $subtotal=$libro->precio_estudiante*$request->CANTIDADtabla[$key];
+            $subtotal=$request->precio_unitario[$key]*$request->cantidad[$key];
             $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
+
+
+           
+
+            //MODIFICO LAS CANTIDADES DE LIBROS VENDIDAS (CANT_VENTAS)
+
+            $antes=Libro::where('ISBN',$id)->first();
+            $antesVentas=LibroxVenta::where('ISBN',$id)->first();
+
+            if($antesVentas->cant>=$request->cantidad[$key]){//VENDI MENOS QUE ANTES
+
+                $diferencia=$antesVentas->cant-$request->cantidad[$key];
+                $cant_venta=$antes->cant_venta-$diferencia;//CANTIDAD VENDIDA
+
+                $cant_deposito=$antes->cant_deposito+$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
+            }
+
+            if($antesVentas->cant<$request->cantidad[$key]){//VENDI MAYOR CANTIDAD QUE ANTES
+            
+                $diferencia=$request->cantidad[$key]-$antesVentas->cant;
+
+            $cant_venta=$antes->cant_venta+$diferencia;//CANTIDAD VENDIDA
+
+            $cant_deposito=$antes->cant_deposito-$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
+            }
+            \DB::table('libro')
+            ->where('ISBN', $id)
+            ->update([
+            'cant_venta' =>$cant_venta,
+            'cant_deposito' => $cant_deposito
+            ]);
+
+
+
         }
-
-}else if($cliente->id_tipo_cliente==3){ //DOCENTE
-    foreach ($request->ISBN as $key => $id){
-            $libro=Libro::where('ISBN',$id)->get();
-        $idDescuento=$request->idDescuento[$key];
-        $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
-        $subtotal=$libro->precio_docente*$request->CANTIDADtabla[$key];
-        $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
-    }
-
-}
+        
 
 
 
 
-        \DB::table('venta')
-        ->where('idVenta', $request->get('idVenta'))
-        ->update([
+
+
+
+//TABLA VENTA
+\DB::table('venta')
+->where('idVenta', $request->get('idVenta'))->update([
             'idVenta' => $request->get('idVenta'),
             'fecha' => $request->get('fecha'),
             'condicion' => $request->get('condicion'),
@@ -170,12 +193,20 @@ $total=0;
         foreach ($request->ISBN as $key => $id) 
         {
             \DB::table('libroxventa')
-            ->where('idVenta', $request->get('idVenta'))
             ->where('ISBN', $id)
+            ->where('idVenta', $request->get('idVenta'))
             ->update([
             'cant' => $request->cantidad[$key],
-            'IdDescuento' => $request->idDescuento[$key]
+            'IdDescuento' => $request->IdDescuento[$key],
+            'precio_unitario' => $request->precio_unitario[$key]
             ]);
+
+
+
+
+        
+
+
         }
 
 return redirect('/todasVentas');
@@ -245,16 +276,23 @@ return redirect('/todasVentas');
      * @param  \App\Venta  $venta
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Venta $venta)
+    public function imprimir(Request $request)
     {
-        //
+        return response()->json($request->get('id_recibo'));
+        $data = [
+            'titulo' => $request->get('nombre'),
+            'total' => '520'
+        ];
+        //incrementar numero, control si no talonario nuevo. traer id venta
+        $pdf = \PDF::loadView('ejemplo',compact('data'));
+        return $pdf->download('ejemplo.pdf');
     }
 
 
 
     public function insertVenta(Request $request)
     {
-
+        //numero de recibo corresponda y talonario,pasar id venta
         //INSERTO VENTA
         $nuevaVenta = new Venta();
        $nuevaVenta->fecha=$request->fecha;
@@ -309,39 +347,108 @@ if($request->id_tipo_cliente==1){ //GENERAL
             $libro->ISBN=$id;
             $libro->idVenta=$idVenta;
             $libro->cant=$request->CANTIDADtabla[$key];
-            $libro->idDescuento=$request->idDescuento[$key];
 
-        
+            //PRECIO_UNITARIO
+            if($request->id_tipo_cliente==1){ //GENERAL
+                $libro->precio_unitario=$request->PRECIO_GENERALtabla[$key];
+            }else if($request->id_tipo_cliente==2){ //ESTUDIANTE
+                $libro->precio_unitario=$request->PRECIO_ESTUDIANTEtabla[$key];
+
+            }else if($request->id_tipo_cliente==3){ //DOCENTE
+                $libro->precio_unitario=$request->PRECIO_DOCENTEtabla[$key];
+
+            }
+
+
             \DB::table('libroxventa')->insert(
             ['ISBN' => $libro->ISBN, 
             'idVenta' => $libro->idVenta, 
             'cant' => $libro->cant, 
-            'idDescuento' => $libro->idDescuento, 
-
+            'IdDescuento' => $request->idDescuento[$key], 
+            'precio_unitario' => $libro->precio_unitario
             ]);
+            //ana
             $titulo=\DB::table('libro')->select('titulo')->where("ISBN","=",$libro->ISBN)->get();
             $info[$i]["ISBN"]=$id;
             $info[$i]["titulo"]=$titulo;
             $info[$i]["cantidad"]=$request->CANTIDADtabla[$key];
+            $info[$i]["precio_unitario"]= $libro->precio_unitario;
             $i++;
-            
+            //ana
+            //MODIFICO LAS CANTIDADES DE LIBROS VENDIDAS (CANT_VENTAS)
 
+            $antes=Libro::where('ISBN',$id)->first();
+            $cant_venta=$antes->cant_venta+$libro->cant;//CANTIDAD VENDIDA
+
+            $cant_deposito=$antes->cant_deposito-$libro->cant;//CANTIDAD QUE ME QUEDA EN DEPOSITO
+
+            \DB::table('libro')
+            ->where('ISBN', $id)
+            ->update([
+            'cant_venta' =>$cant_venta,
+            'cant_deposito' => $cant_deposito
+            ]);
+        
 
         }
-        //busco los datos del cliente
+        //ana
         $cliente=\DB::table('cliente')->select('*')->where("dni_cuit","=",$nuevaVenta->Cliente_dni_cuit)->get();
-        //table('cliente')->select('dni_cuit','nombre_apellido','domicilio','telefono','email')->where('nombre_apellido','=',$cli)->get();
-        
-        return view('recibo.alta')->with('nuevaVenta',$nuevaVenta)->with('info',$info)->with('cliente',$cliente)->with('total',$total);
-        //$talonario=\DB::table('talonario')->select('*')->get()->last();
-        //return response()->json($talonario);
-        //info lo tenes que recorrer como el array de notificacion para el cuerpo del mail, depues nuevaVenta 
-        //es una objeto comun. $nuevaVenta tiene:fecha, y dni_cuit del cliente.
-        //info tiene los ISBN, y la cantidad
-        // y $cliente tiene todos los datos de cliente.
-        // $total tiene el total ya con descuentos y cantidades multiplicadas
-        //faltaria ponerle el numero de recibo pero todavia lo estoy pensando 
+        return view('recibo.alta')->with('nuevaVenta',$nuevaVenta)->with('info',$info)->with('cliente',$cliente)->with('total',$total);   
+         //ana
+        //return redirect('/todasVentas'); PONER ESTO EN EL MENU!! 
+
     }
+
+
+    public function buscadorTodasVentas(Request $request){
+    
+      
+
+        
+    $totalVentas['totalVentas']=Venta::all();
+
+    $totalLibroxVenta['totalLibroxVenta']=LibroxVenta::all();
+    $Descuentos['descuentos']=Descuento::all();
+
+    $Libros['libros']=Libro::all();
+
+    $Clientes['clientes']=Cliente::all();
+
+
+
+    return view('TodasVentasAJAX')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
+
+    }
+
+  
+
+
+
+    public function buscadorClientexventa(Request $request){
+        $totalVentas['totalVentas']=Venta::all();
+
+    $totalLibroxVenta['totalLibroxVenta']=LibroxVenta::all();
+    $Descuentos['descuentos']=Descuento::all();
+
+    $Libros['libros']=Libro::all();
+
+    $Clientes['clientes']=Cliente::where("nombre_apellido","like","%".$request->texto."%")->take(2)->get();
+
+
+    //return view("paginaprincipal",compact('totalLibros'));
+
+    return view('paginasClientexVentas')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
+
+        
+    }
+
+
+
+
+
+
+
+
 
 
 
