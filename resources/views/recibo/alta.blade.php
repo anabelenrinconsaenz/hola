@@ -40,7 +40,7 @@ SUBTOTAL Y EL TOTAL VIENE EN 0 NO SE PORQUE-->
             <input type="number" id="dni"  name="dni" class="form-control" class="col-xs-3"style= " width:30%;background-color:#FDFEA4;" value="{{$cli->dni_cuit}}">
           </div>
           <div class="row col-xs-12">
-            <b><label for="telofono" style= "margin: 0px   10px   0px   40px;"  class="col-xs-3"> Telefono : </label></b> 
+            <b><label for="telefono" style= "margin: 0px   10px   0px   40px;"  class="col-xs-3"> Telefono : </label></b> 
             <input type="number" id="telefono" name="telefono" class="form-control"  class="col-xs-3" style= "  width:30%;background-color:#FDFEA4;" value="{{$cli->telefono}}">  
             <b><label for="email"  style= "margin: 0px   10px   0px   40px;"  class="col-xs-3"> Email: </label></b>   
             <input type="text" id="email" name="email" class="form-control"  class="col-xs-3" style= " width:30%; background-color:#FDFEA4;" value="{{$cli->email}}">
@@ -82,6 +82,10 @@ SUBTOTAL Y EL TOTAL VIENE EN 0 NO SE PORQUE-->
         </TR>
         </tbody>
         </TABLE>
+        @foreach ($idVenta as $venta) <!-- PONER ESTO EN UN HIDDEN-->
+         
+          <input type="hidden" id="idVenta" name="idVenta" value=" {{$venta}}">
+        @endforeach 
         <div align="right" style="margin-top: 10px;">
              <button type="submit" class="btn btn-primary btn-lg btn-block">Agregar</button>
          </div>

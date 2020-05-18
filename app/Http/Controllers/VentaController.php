@@ -14,10 +14,12 @@ use App\Http\Controllers\DB;
 
 
 use App\LibroxVenta;
-
+use App\Talonario;
 
 class VentaController extends Controller
 {
+    private $reciboActual;
+    private $talonarioActual; 
     /**
      * Display a listing of the resource.
      *
@@ -278,12 +280,30 @@ return redirect('/todasVentas');
      */
     public function imprimir(Request $request)
     {
-        return response()->json($request->get('id_recibo'));
+       //return response()->json($request->get('telefono'));
         $data = [
-            'titulo' => $request->get('nombre'),
-            'total' => '520'
+            'id_recibo' => $request->get('id_recibo'),//falta talonario
+            'fecha' => $request->get('fecha'),
+            'nombre' => $request->get('nombre'),
+            'dni_cuit' => $request->get('dni'),
+            'domicilio' => $request->get('domicilio'),
+            'telefono' => $request->get('telefono'),
+            'email' => $request->get('email'),
+            'titulo' => $request->get('titulo'),
+            'cantidad' => $request->get('cantidad'),
+            'precio_unitario' => $request->get('precio_unitario'),
+            'total' => $request->get('total'),
+            'subtotal' => $request->get('sub_total'),
         ];
-        //incrementar numero, control si no talonario nuevo. traer id venta
+        
+        //inserto en la bd id_recibo	
+        /*\DB::table('recibo')->insert(
+            ['id_recibo' => $request->get('$recibo'), //sacarle el incremental o no se
+            'idVenta' => $request->get('idVenta'), 
+            'talonario_id_talonario' => $request->get('$talonario'), 
+            'fecha'=> $request->get('fecha'),
+            ]);
+        */
         $pdf = \PDF::loadView('ejemplo',compact('data'));
         return $pdf->download('ejemplo.pdf');
     }
@@ -292,41 +312,53 @@ return redirect('/todasVentas');
 
     public function insertVenta(Request $request)
     {
-        //numero de recibo corresponda y talonario,pasar id venta
+        //inicializar 
+        if(Talonario::all()->count()==1){
+            $talonario=Talonario::all();
+            foreach($talonario as $tal){
+                $this->talonarioActual=$tal->nro_talonario;
+                $this->reciboFin=$tal->nro_fin;
+                $this->reciboActual=$tal->nro_incio;
+            }
+           
+
+
+        }
+     
         //INSERTO VENTA
         $nuevaVenta = new Venta();
-       $nuevaVenta->fecha=$request->fecha;
-       $nuevaVenta->condicion=$request->condicion;
-       $nuevaVenta->lugar=$request->lugar;
-       $nuevaVenta->Cliente_dni_cuit=$request->dni;
+        $nuevaVenta->fecha=$request->fecha;
+        $nuevaVenta->condicion=$request->condicion;
+        $nuevaVenta->lugar=$request->lugar;
+        $nuevaVenta->Cliente_dni_cuit=$request->dni;
 
-//calculo el total de la venta
-$subtotal;
-$total=0;
-if($request->id_tipo_cliente==1){ //GENERAL
-    foreach ($request->PRECIO_GENERALtabla as $i => $precio) {
-            $idDescuento=$request->idDescuento[$i];
-            $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
-            $subtotal=$precio*$request->CANTIDADtabla[$i];
-            $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
-    }
-}else if($request->id_tipo_cliente==2){ //ESTUDIANTE
-    foreach ($request->PRECIO_ESTUDIANTEtabla as $i => $precio) {
-            $idDescuento=$request->idDescuento[$i];
-            $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
-            $subtotal=$precio*$request->CANTIDADtabla[$i];
-            $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
-    }
-}else if($request->id_tipo_cliente==3){ //DOCENTE
-    foreach ($request->PRECIO_DOCENTEtabla as $i => $precio) {
-            $idDescuento=$request->idDescuento[$i];
-            $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
-            $subtotal=$precio*$request->CANTIDADtabla[$i];
-            $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
-    }
-}
+        //calculo el total de la venta
+        $subtotal;
+        $total=0;
+        if($request->id_tipo_cliente==1){ //GENERAL
+            foreach ($request->PRECIO_GENERALtabla as $i => $precio) {
+                    $idDescuento=$request->idDescuento[$i];
+                    $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
+                    $subtotal=$precio*$request->CANTIDADtabla[$i];
+                    $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
+            }
+        }else if($request->id_tipo_cliente==2){ //ESTUDIANTE
+            foreach ($request->PRECIO_ESTUDIANTEtabla as $i => $precio) {
+                    $idDescuento=$request->idDescuento[$i];
+                    $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
+                    $subtotal=$precio*$request->CANTIDADtabla[$i];
+                    $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
+            }
+        }else if($request->id_tipo_cliente==3){ //DOCENTE
+            foreach ($request->PRECIO_DOCENTEtabla as $i => $precio) {
+                    $idDescuento=$request->idDescuento[$i];
+                    $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
+                    $subtotal=$precio*$request->CANTIDADtabla[$i];
+                    $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
+            }
+        }
 
-//INSERTO EN TABLA VENTA
+        //INSERTO EN TABLA VENTA
 
        $idVenta = \DB::table('venta')->insertGetId(
         ['fecha' => $nuevaVenta->fecha, 
@@ -338,7 +370,7 @@ if($request->id_tipo_cliente==1){ //GENERAL
         ]);
 
        
-//INSERTO LIBRO X VENTA
+        //INSERTO LIBRO X VENTA
         $i=0;
         foreach ($request->ISBNtabla as $key => $id) 
         {
@@ -391,9 +423,24 @@ if($request->id_tipo_cliente==1){ //GENERAL
         
 
         }
-        //ana
+        $idVenta=\DB::table('venta')->select('idVenta')->get()->last();
+        //ana   //numero de recibo corresponda y talonario,pasar id venta
+        //incrementar numero, control si no talonario nuevo.
+        
+        if($this->reciboActual<=$this->talonarioActual->nro_fin){
+            $this->reciboActual=$this->reciboActual+1;
+        }
+        else{
+            //nuevo talonario 
+            //$talonario=\DB::table('talonario')->select('*')->get()->last();//apreguntarle
+            //$this->talonarioActual= $talonario->nro_talonario. //ver numero talonario.
+            //$this->reciboActual=$talonario->nro_inicio.
+        }
+        //pasar en el return  con this $reciboActual y  $talonarioActual
+        
+       
         $cliente=\DB::table('cliente')->select('*')->where("dni_cuit","=",$nuevaVenta->Cliente_dni_cuit)->get();
-        return view('recibo.alta')->with('nuevaVenta',$nuevaVenta)->with('info',$info)->with('cliente',$cliente)->with('total',$total)->with('sub_total',$sub_total);   
+        return view('recibo.alta')->with('nuevaVenta',$nuevaVenta)->with('info',$info)->with('cliente',$cliente)->with('total',$total)->with('sub_total',$sub_total)->with('idVenta',$idVenta);   
          //ana
         //return redirect('/todasVentas'); PONER ESTO EN EL MENU!! 
 
@@ -404,19 +451,19 @@ if($request->id_tipo_cliente==1){ //GENERAL
     
       
 
-        
-    $totalVentas['totalVentas']=Venta::all();
+            
+        $totalVentas['totalVentas']=Venta::all();
 
-    $totalLibroxVenta['totalLibroxVenta']=LibroxVenta::all();
-    $Descuentos['descuentos']=Descuento::all();
+        $totalLibroxVenta['totalLibroxVenta']=LibroxVenta::all();
+        $Descuentos['descuentos']=Descuento::all();
 
-    $Libros['libros']=Libro::all();
+        $Libros['libros']=Libro::all();
 
-    $Clientes['clientes']=Cliente::all();
+        $Clientes['clientes']=Cliente::all();
 
 
 
-    return view('TodasVentasAJAX')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
+        return view('TodasVentasAJAX')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
 
     }
 
@@ -427,17 +474,17 @@ if($request->id_tipo_cliente==1){ //GENERAL
     public function buscadorClientexventa(Request $request){
         $totalVentas['totalVentas']=Venta::all();
 
-    $totalLibroxVenta['totalLibroxVenta']=LibroxVenta::all();
-    $Descuentos['descuentos']=Descuento::all();
+        $totalLibroxVenta['totalLibroxVenta']=LibroxVenta::all();
+        $Descuentos['descuentos']=Descuento::all();
 
-    $Libros['libros']=Libro::all();
+        $Libros['libros']=Libro::all();
 
-    $Clientes['clientes']=Cliente::where("nombre_apellido","like","%".$request->texto."%")->take(2)->get();
+        $Clientes['clientes']=Cliente::where("nombre_apellido","like","%".$request->texto."%")->take(2)->get();
 
 
-    //return view("paginaprincipal",compact('totalLibros'));
+        //return view("paginaprincipal",compact('totalLibros'));
 
-    return view('paginasClientexVentas')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
+        return view('paginasClientexVentas')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
 
         
     }
