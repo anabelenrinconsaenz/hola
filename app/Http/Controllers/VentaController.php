@@ -381,7 +381,7 @@ if($request->id_tipo_cliente==1){ //GENERAL
             $cant_venta=$antes->cant_venta+$libro->cant;//CANTIDAD VENDIDA
 
             $cant_deposito=$antes->cant_deposito-$libro->cant;//CANTIDAD QUE ME QUEDA EN DEPOSITO
-
+            $sub_total=$libro->precio_unitario*$request->CANTIDADtabla[$key];//ESTO ES PARA TENER EL SUBTOTAL(CNAT*PRECIO UNITARIO)
             \DB::table('libro')
             ->where('ISBN', $id)
             ->update([
@@ -393,7 +393,7 @@ if($request->id_tipo_cliente==1){ //GENERAL
         }
         //ana
         $cliente=\DB::table('cliente')->select('*')->where("dni_cuit","=",$nuevaVenta->Cliente_dni_cuit)->get();
-        return view('recibo.alta')->with('nuevaVenta',$nuevaVenta)->with('info',$info)->with('cliente',$cliente)->with('total',$total);   
+        return view('recibo.alta')->with('nuevaVenta',$nuevaVenta)->with('info',$info)->with('cliente',$cliente)->with('total',$total)->with('sub_total',$sub_total);   
          //ana
         //return redirect('/todasVentas'); PONER ESTO EN EL MENU!! 
 

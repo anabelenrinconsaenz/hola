@@ -20,30 +20,30 @@ SUBTOTAL Y EL TOTAL VIENE EN 0 NO SE PORQUE-->
 
       <!-- ACA IRIA EL NUMERO DE RECIBO-->
 
-       <input type="number" id="id_recibo"  class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;" value="634567" >
+       <input type="number" id="id_recibo" name="id_recibo" class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;" value="634567" />
        </div>
       <div class="row col-xs-12">
        <b> <label for="fecha" class="col-xs-6" style="margin: 10px  0px   0px   600px;"> Fecha </label></b>
-      <input type="date" id="fecha"  class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;"  value="{{$nuevaVenta->fecha}}">
+      <input type="date" id="fecha" name="fecha" class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;"  value="{{$nuevaVenta->fecha}}" />
      </div>
 
         @foreach($cliente as $cli)
           <div align="left">
           <div class="row col-xs-12">
             <b><label  for="nombre" style= "margin: 0px   0px   0px   40px; font-size:15px; " class="col-xs-6">Nom y Ap/Razon Social: </label></b>
-            <input type="text"  id="nombre" align="left" class="form-control" style= "width:40%; background-color:#FDFEA4; margin: 0px   50px   0px   0px;" class="col-xs-6" value="{{$cli->nombre_apellido}}">
+            <input type="text"  id="nombre" name="nombre" align="left" class="form-control" style= "width:40%; background-color:#FDFEA4; margin: 0px   50px   0px   0px;" class="col-xs-6" value="{{$cli->nombre_apellido}}">
             </div>
           <div class="row col-xs-12">
             <b><label for="domicilio" style= "margin: 0px   0px   0px   40px; " class="col-xs-3"> Domicilio: </label></b>
-            <input type="text" id= "domicilio" class="form-control" class="col-xs-3" style= "width:30%; background-color:#FDFEA4;" value="{{$cli->domicilio}}">
+            <input type="text" id= "domicilio" name="domicilio" class="form-control" class="col-xs-3" style= "width:30%; background-color:#FDFEA4;" value="{{$cli->domicilio}}">
             <b><label for="dni"  style= "margin: 0px   10px   0px   10px;" class="col-xs-3"> DNI o CUIT: </label></b>
-            <input type="number" id="dni" class="form-control" class="col-xs-3"style= " width:30%;background-color:#FDFEA4;" value="{{$cli->dni_cuit}}">
+            <input type="number" id="dni"  name="dni" class="form-control" class="col-xs-3"style= " width:30%;background-color:#FDFEA4;" value="{{$cli->dni_cuit}}">
           </div>
           <div class="row col-xs-12">
             <b><label for="telofono" style= "margin: 0px   10px   0px   40px;"  class="col-xs-3"> Telefono : </label></b> 
-            <input type="number" id="telefono" class="form-control"  class="col-xs-3" style= "  width:30%;background-color:#FDFEA4;" value="{{$cli->telefono}}">  
+            <input type="number" id="telefono" name="telefono" class="form-control"  class="col-xs-3" style= "  width:30%;background-color:#FDFEA4;" value="{{$cli->telefono}}">  
             <b><label for="email"  style= "margin: 0px   10px   0px   40px;"  class="col-xs-3"> Email: </label></b>   
-            <input type="text" id="email" class="form-control"  class="col-xs-3" style= " width:30%; background-color:#FDFEA4;" value="{{$cli->email}}">
+            <input type="text" id="email" name="email" class="form-control"  class="col-xs-3" style= " width:30%; background-color:#FDFEA4;" value="{{$cli->email}}">
           </div>
          @endforeach
          
@@ -59,11 +59,15 @@ SUBTOTAL Y EL TOTAL VIENE EN 0 NO SE PORQUE-->
         @foreach ($info as $fila)
             <tr style="border: solid 1px #000000; ">
             <td style="border: solid 1px #000000; ">{{$fila["cantidad"]}}</td>
+              <input type="hidden" id="cantidad" name="cantidad" value="{{$fila["cantidad"]}}">
             @foreach($fila["titulo"] as $ti)
             <td style="border: solid 1px #000000; ">{{$ti->titulo}}</td>
+               <input type="hidden" id="titulo" name="titulo" value="{{$ti->titulo}}">
             @endforeach
             <TD style="border: solid 1px #000000; ">{{$fila["precio_unitario"]}}</TD>
-            <TD style="border: solid 1px #000000; "></TD>
+            <input type="hidden" id="precio_unitario" name="precio_unitario" value="{{$fila["precio_unitario"]}}">
+            <TD style="border: solid 1px #000000; ">{{$sub_total}}</TD>
+            <input type="hidden" id="sub_total" name="sub_total" value="{{$sub_total}}">
             </tr>
         @endforeach
 
@@ -74,6 +78,7 @@ SUBTOTAL Y EL TOTAL VIENE EN 0 NO SE PORQUE-->
         <TR >
         <TD colspan="3" style="border: solid 1px #000000; "> Total </TD> 
         <TD aling="right" style="border: solid 1px #000000; ">  {{$total}}</TD>
+        <input type="hidden" id="total" name="total" value="{{$total}}">
         </TR>
         </tbody>
         </TABLE>
