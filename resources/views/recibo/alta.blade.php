@@ -16,12 +16,17 @@ SUBTOTAL Y EL TOTAL VIENE EN 0 NO SE PORQUE-->
     <form  action="{{ url ('/imprimir') }}" method="GET" style=" max-width: 60em; height: 40em; background-color:#FDFEA4; ">
     
      <div class="row col-xs-12">
-      <b><label for="id_recibo" class="col-xs-6" style="margin: 10px  0px   0px   600px;"> RNº </label> </b>
+      <b><label for="numero" class="col-xs-6" style="margin: 10px  0px   0px   600px;"> RNº </label> </b>
 
       <!-- ACA IRIA EL NUMERO DE RECIBO-->
-
-       <input type="number" id="id_recibo" name="id_recibo" class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;" value="634567" />
-       </div>
+        @foreach($numero as $num)
+        
+       <input type="number" id="numero" name="numero" class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;" value="{{$num->id_talonario}}{{$num->nro_actual}}" />
+        <input type="hidden" id="id_recibo" name="id_recibo" value="{{$num->nro_actual}}">
+        <input type="hidden" id="id_talonario" name="id_talonario" value=" {{$num->id_talonario}}">
+        @endforeach
+      </div>
+    
       <div class="row col-xs-12">
        <b> <label for="fecha" class="col-xs-6" style="margin: 10px  0px   0px   600px;"> Fecha </label></b>
       <input type="date" id="fecha" name="fecha" class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;"  value="{{$nuevaVenta->fecha}}" />

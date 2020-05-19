@@ -20,6 +20,7 @@ class VentaController extends Controller
 {
     private $reciboActual;
     private $talonarioActual; 
+    private $reciboFin;
     /**
      * Display a listing of the resource.
      *
@@ -118,100 +119,100 @@ public function deleteVenta(Request $request){
 
 public function updateVenta(Request $request){ //MODIFICO VENTAS
 
-//VENTA
+        //VENTA
 
-//calculo el nuevo total
-$dni= $request->get('dni_cuit');
+        //calculo el nuevo total
+        $dni= $request->get('dni_cuit');
 
-$cliente=Cliente::where('dni_cuit',$dni)->get();
+        $cliente=Cliente::where('dni_cuit',$dni)->get();
 
-$subtotal;
-$total=0;
+        $subtotal;
+        $total=0;
 
-        foreach ($request->ISBN as $key => $id){
-        
-            $idDescuento=$request->IdDescuento[$key];
-            $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
-            $subtotal=$request->precio_unitario[$key]*$request->cantidad[$key];
-            $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
-
-
-           
-
-            //MODIFICO LAS CANTIDADES DE LIBROS VENDIDAS (CANT_VENTAS)
-
-            $antes=Libro::where('ISBN',$id)->first();
-            $antesVentas=LibroxVenta::where('ISBN',$id)->first();
-
-            if($antesVentas->cant>=$request->cantidad[$key]){//VENDI MENOS QUE ANTES
-
-                $diferencia=$antesVentas->cant-$request->cantidad[$key];
-                $cant_venta=$antes->cant_venta-$diferencia;//CANTIDAD VENDIDA
-
-                $cant_deposito=$antes->cant_deposito+$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
-            }
-
-            if($antesVentas->cant<$request->cantidad[$key]){//VENDI MAYOR CANTIDAD QUE ANTES
-            
-                $diferencia=$request->cantidad[$key]-$antesVentas->cant;
-
-            $cant_venta=$antes->cant_venta+$diferencia;//CANTIDAD VENDIDA
-
-            $cant_deposito=$antes->cant_deposito-$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
-            }
-            \DB::table('libro')
-            ->where('ISBN', $id)
-            ->update([
-            'cant_venta' =>$cant_venta,
-            'cant_deposito' => $cant_deposito
-            ]);
+                foreach ($request->ISBN as $key => $id){
+                
+                    $idDescuento=$request->IdDescuento[$key];
+                    $idDescuento=Descuento::where('idDescuento',$idDescuento)->first();
+                    $subtotal=$request->precio_unitario[$key]*$request->cantidad[$key];
+                    $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
 
 
+                
 
-        }
-        
+                    //MODIFICO LAS CANTIDADES DE LIBROS VENDIDAS (CANT_VENTAS)
+
+                    $antes=Libro::where('ISBN',$id)->first();
+                    $antesVentas=LibroxVenta::where('ISBN',$id)->first();
+
+                    if($antesVentas->cant>=$request->cantidad[$key]){//VENDI MENOS QUE ANTES
+
+                        $diferencia=$antesVentas->cant-$request->cantidad[$key];
+                        $cant_venta=$antes->cant_venta-$diferencia;//CANTIDAD VENDIDA
+
+                        $cant_deposito=$antes->cant_deposito+$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
+                    }
+
+                    if($antesVentas->cant<$request->cantidad[$key]){//VENDI MAYOR CANTIDAD QUE ANTES
+                    
+                        $diferencia=$request->cantidad[$key]-$antesVentas->cant;
+
+                    $cant_venta=$antes->cant_venta+$diferencia;//CANTIDAD VENDIDA
+
+                    $cant_deposito=$antes->cant_deposito-$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
+                    }
+                    \DB::table('libro')
+                    ->where('ISBN', $id)
+                    ->update([
+                    'cant_venta' =>$cant_venta,
+                    'cant_deposito' => $cant_deposito
+                    ]);
 
 
+
+                }
+                
 
 
 
 
 
-//TABLA VENTA
-\DB::table('venta')
-->where('idVenta', $request->get('idVenta'))->update([
-            'idVenta' => $request->get('idVenta'),
-            'fecha' => $request->get('fecha'),
-            'condicion' => $request->get('condicion'),
-            'lugar' => $request->get('domicilio'),
-            'Cliente_dni_cuit' => $request->get('dni_cuit'),
-            'total' => $total
-
-        ]);
-        
 
 
-//LIBRO X VENTA
-        foreach ($request->ISBN as $key => $id) 
-        {
-            \DB::table('libroxventa')
-            ->where('ISBN', $id)
-            ->where('idVenta', $request->get('idVenta'))
-            ->update([
-            'cant' => $request->cantidad[$key],
-            'IdDescuento' => $request->IdDescuento[$key],
-            'precio_unitario' => $request->precio_unitario[$key]
-            ]);
+        //TABLA VENTA
+        \DB::table('venta')
+        ->where('idVenta', $request->get('idVenta'))->update([
+                    'idVenta' => $request->get('idVenta'),
+                    'fecha' => $request->get('fecha'),
+                    'condicion' => $request->get('condicion'),
+                    'lugar' => $request->get('domicilio'),
+                    'Cliente_dni_cuit' => $request->get('dni_cuit'),
+                    'total' => $total
+
+                ]);
+                
+
+
+        //LIBRO X VENTA
+                foreach ($request->ISBN as $key => $id) 
+                {
+                    \DB::table('libroxventa')
+                    ->where('ISBN', $id)
+                    ->where('idVenta', $request->get('idVenta'))
+                    ->update([
+                    'cant' => $request->cantidad[$key],
+                    'IdDescuento' => $request->IdDescuento[$key],
+                    'precio_unitario' => $request->precio_unitario[$key]
+                    ]);
 
 
 
 
-        
+                
 
 
-        }
+                }
 
-return redirect('/todasVentas');
+        return redirect('/todasVentas');
 
 
 }
@@ -282,7 +283,8 @@ return redirect('/todasVentas');
     {
        //return response()->json($request->get('telefono'));
         $data = [
-            'id_recibo' => $request->get('id_recibo'),//falta talonario
+            'id_recibo' => $request->get('id_recibo'),
+            'id_talonario' => $request->get('id_talonario'),
             'fecha' => $request->get('fecha'),
             'nombre' => $request->get('nombre'),
             'dni_cuit' => $request->get('dni'),
@@ -297,13 +299,13 @@ return redirect('/todasVentas');
         ];
         
         //inserto en la bd id_recibo	
-        /*\DB::table('recibo')->insert(
-            ['id_recibo' => $request->get('$recibo'), //sacarle el incremental o no se
+        \DB::table('recibo')->insert(
+            ['id_recibo' => $request->get('id_recibo'), //sacarle el incremental o no se
             'idVenta' => $request->get('idVenta'), 
-            'talonario_id_talonario' => $request->get('$talonario'), 
+            'talonario_id_talonario' => $request->get('id_talonario'), 
             'fecha'=> $request->get('fecha'),
             ]);
-        */
+    
         $pdf = \PDF::loadView('ejemplo',compact('data'));
         return $pdf->download('ejemplo.pdf');
     }
@@ -312,17 +314,20 @@ return redirect('/todasVentas');
 
     public function insertVenta(Request $request)
     {
-        //inicializar 
+        //inicializarTalonario
         if(Talonario::all()->count()==1){
             $talonario=Talonario::all();
             foreach($talonario as $tal){
-                $this->talonarioActual=$tal->nro_talonario;
-                $this->reciboFin=$tal->nro_fin;
-                $this->reciboActual=$tal->nro_incio;
+                \DB::table('talonario')
+                    ->where('id_talonario',$tal->id_talonario)
+                    ->update([
+                        'id_talonario' => $tal->id_talonario,
+                        'nro_inicio' => $tal->nro_inicio,
+                        'nro_fin' => $tal->nro_fin,
+                        'estado' => '1',
+                        'nro_actual' =>$tal->nro_actual
+                    ]);
             }
-           
-
-
         }
      
         //INSERTO VENTA
@@ -426,23 +431,60 @@ return redirect('/todasVentas');
         $idVenta=\DB::table('venta')->select('idVenta')->get()->last();
         //ana   //numero de recibo corresponda y talonario,pasar id venta
         //incrementar numero, control si no talonario nuevo.
-        
-        if($this->reciboActual<=$this->talonarioActual->nro_fin){
-            $this->reciboActual=$this->reciboActual+1;
+        //return response()->json();
+        $flag=false;
+        $talonario=\DB::table('talonario')->select('*')->where('estado','=','1')->get();
+        foreach($talonario as $tal){
+            
+            if($tal->nro_actual< $tal->nro_fin){
+                
+                \DB::table('talonario')
+                ->where('id_talonario',$tal->id_talonario)
+                ->update([
+                    'id_talonario' => $tal->id_talonario,
+                    'nro_inicio' => $tal->nro_inicio,
+                    'nro_fin' => $tal->nro_fin,
+                    'estado' => '1',
+                    'nro_actual' =>$tal->nro_actual+1 //ver
+                ]);
+                $flag=false;
+            }
+            else{
+                //cambio el estado del talonario actual 
+                \DB::table('talonario')
+                ->where('id_talonario',$tal->id_talonario)
+                ->update([
+                    'id_talonario' => $tal->id_talonario,
+                    'nro_inicio' => $tal->nro_inicio,
+                    'nro_fin' => $tal->nro_fin,
+                    'estado' => '0',
+                    'nro_actual' =>$tal->nro_actual 
+                ]);
+                //nuevo talonario 
+                $flag=true;
+            }
         }
-        else{
-            //nuevo talonario 
-            //$talonario=\DB::table('talonario')->select('*')->get()->last();//apreguntarle
-            //$this->talonarioActual= $talonario->nro_talonario. //ver numero talonario.
-            //$this->reciboActual=$talonario->nro_inicio.
+        if($flag=true){
+            $talo=\DB::table('talonario')->select('*')->get()->last();
+            
+                \DB::table('talonario')
+                ->where('id_talonario',$talo->id_talonario)
+                ->update([
+                    'id_talonario' => $talo->id_talonario,
+                    'nro_inicio' => $talo->nro_inicio,
+                    'nro_fin' => $talo->nro_fin,
+                    'estado' => '1',
+                    'nro_actual' =>$talo->nro_actual 
+                ]);
+            
         }
-        //pasar en el return  con this $reciboActual y  $talonarioActual
+        $numero=\DB::table('talonario')->select('*')->where('estado','=','1')->get();
         
        
         $cliente=\DB::table('cliente')->select('*')->where("dni_cuit","=",$nuevaVenta->Cliente_dni_cuit)->get();
-        return view('recibo.alta')->with('nuevaVenta',$nuevaVenta)->with('info',$info)->with('cliente',$cliente)->with('total',$total)->with('sub_total',$sub_total)->with('idVenta',$idVenta);   
-         //ana
-        //return redirect('/todasVentas'); PONER ESTO EN EL MENU!! 
+        return view('recibo.alta')->with('numero',$numero)->with('nuevaVenta',$nuevaVenta)->with('info',$info)->with('cliente',$cliente)->with('total',$total)->with('sub_total',$sub_total)->with('idVenta',$idVenta);   
+        //ana
+    
 
     }
 

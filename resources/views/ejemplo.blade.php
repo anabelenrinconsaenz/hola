@@ -37,7 +37,7 @@
 
       <!-- ACA IRIA EL NUMERO DE RECIBO-->
 
-       <input type="text" id="id_recibo" name="id_recibo" class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;" value="634567" />
+       <input type="text" id="id_recibo" name="id_recibo" class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;" value="{{$data['id_talonario']}}{{$data['id_recibo']}}" />
        </div>
       <div class="row col-xs-12">
        <b> <label for="fecha" class="col-xs-6" style="margin: 10px  0px   0px   600px;"> Fecha </label></b>

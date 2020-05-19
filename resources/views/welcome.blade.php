@@ -136,6 +136,7 @@
                         <a class="dropdown-item" href="#">Anuales</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/altaVentas">Nueva venta</a>
+                        <a class="dropdown-item" href="/todasVentas">Ventas</a>
                         <a class="dropdown-item" href="#">Cancelar venta</a>
                         <a class="dropdown-item" href="#">Modificar venta</a>
                       </div>

@@ -26,7 +26,14 @@ class TalonarioController extends Controller
     public function create(Request $request)
     {
         $datosTalonario=request()->all();
-        Talonario::insert($datosTalonario);
+        //Talonario::insert($datosTalonario);
+        \DB::table('talonario')->insert(
+            ['id_talonario' => $request->get('id_talonario') ,
+            'nro_inicio' => $request->get('nro_inicio'), 
+            'nro_fin' =>  $request->get('nro_fin'), 
+            'estado'=> '0',
+            'nro_actual'=> $request->get('nro_inicio')-1, ///siempre positivo
+            ]);
         return redirect('talonario');
        
     }
