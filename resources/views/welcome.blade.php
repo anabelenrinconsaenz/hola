@@ -10,13 +10,6 @@
           .container/.co-25/.col-75/.row y demás los utiliza Bootstrap
         -->
         <style>
-       li {
-         list-style:none;
-       }
-       h6, a {
-          padding: 12px 6px 12px 8px;
-                display: inline-block;
-       }
        
             .menu {
                 width: 96%;
@@ -28,6 +21,7 @@
                 margin-top: 10px;
                 background-color:#dfdcdd;
                 margin-left: 50px;
+                margin-right: 50px;
                 display: flex;
             }
             
@@ -108,12 +102,43 @@
         <link rel="stylesheet" type="text/css" href="css/ventas.css">
     </head>
     <body style="background-color:#dfdcdd;">
-        <div class="menu" style="margin-top: 10px;">
-            <a class="navbar-brand" href="layout.php">
-              <img src="{{asset('imagen/UniversidadNacionaldeLaPampa.png')}}" >
-            </a>
+
+      {{-- Seccion del logo y nombre del usuario --}}
+      <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{{ url('/home') }}">
+            <img src="{{asset('imagen/UniversidadNacionaldeLaPampa.png')}}">
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+      
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      
+            <!-- Right Side Of Navbar -->
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item dropdown">
+                <a id="navbarDropdown" class="nav-link dropdown-toggle" style="font-size: 1.25em" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                  {{ Auth::user()->name }} <span class="caret"></span>
+                </a>
+      
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                      Cerrar Sesion
+                  </a>
+      
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                      @csrf
+                  </form>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="menu">
+      </nav> 
+      {{-- FIN Seccion del logo y nombre del usuario --}}
+
+        <div>
             <!--
                 El menu todavía no es la version final se pueden realizar cambios para mejorar la interacción del usuario con el mismo
             -->
@@ -121,14 +146,14 @@
                 <ul class="navbar-nav" style="margin: -5px;">
                     <!-- Dropdown -->
                     <li class="nav-item" >
-                      <a class="nav-link font-weight-bold" href="paginaprincipal" style="width: 125px">
+                      <a class="nav-link font-weight-bold" href="paginaprincipal" style="width: 125px;text-align: center;">
                         Libros
                       </a>
                     </li>
                     
                     <!-- Dropdown -->
                     <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle font-weight-bold" href="#" id="ventadrop" data-toggle="dropdown" style="width: 125px">
+                      <a class="nav-link dropdown-toggle font-weight-bold" href="#" id="ventadrop" data-toggle="dropdown" style="width: 125px;text-align: center;">
                         Ventas
                       </a>
                       <div class="dropdown-menu">
@@ -137,30 +162,35 @@
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/altaVentas">Nueva venta</a>
                         <a class="dropdown-item" href="/todasVentas">Ventas</a>
-                        <a class="dropdown-item" href="#">Cancelar venta</a>
-                        <a class="dropdown-item" href="#">Modificar venta</a>
                       </div>
                     </li>
                     
                     <li class="nav-item dropdown" >
                      <li class="nav-item" >
-                      <a class="nav-link font-weight-bold" href="/cliente" style="width: 125px">
+                      <a class="nav-link font-weight-bold" href="/cliente" style="width: 125px;text-align: center;">
                         Clientes
                       </a>
                     </li>
                     
                     <li>
-                      <a class="nav-link font-weight-bold" href="/descuento"style="width: 125px">
+                      <a class="nav-link font-weight-bold" href="/descuento"style="width: 125px;text-align: center;">
                         Descuento
                       </a>
                     </li>
-                     <li>
+                    <li>
                       <a class="nav-link font-weight-bold" href="/talonario"style="width: 125px">
                         Talonarios
                       </a>
                     </li>
+
+                    <li>
+                      <a class="nav-link font-weight-bold" href="/exelFunciones"style="width: 100px;text-align: center;">
+                        Excel
+                      </a>
+                    </li>
+
                     <li class="nav-item dropdown" >
-                      <a class="nav-link font-weight-bold" href="{{url('notificaciones')}}" style="width: 125px">
+                      <a class="nav-link font-weight-bold" href="{{url('notificaciones')}}" style="width: 60px;text-align: center;">
                         <i class="fa fa-bell-o"></i>
                       </a>
                     </li>
@@ -168,26 +198,9 @@
             </nav>
         </div>
 </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
-            <div class="container">
-                @yield('content')
-            </div>
+ 
+<div>
+    @yield('content')
+</div>
             
-        </div>
-            
-    </body>
 </html>

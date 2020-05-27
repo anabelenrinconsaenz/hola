@@ -98,7 +98,8 @@ public function buscadorCliente(Request $request){
     public function modificar(Request $request,$dni_cuit){
 
         Cliente::find($dni_cuit)->update($request->all());
-        return view( 'cliente.confirmacionUpdate');
+        //return view( 'cliente.confirmacionUpdate');
+        return redirect('cliente');
         
     }
 
@@ -121,13 +122,13 @@ public function buscadorCliente(Request $request){
      */
     public function show()
     {
-       
-     
-        $clientes=DB::table('cliente')
+
+        //$clientes=DB::table('cliente')
+        $clientes=Cliente::orderBy('nombre_apellido','ASC')
         ->select('*')
         ->join('tipo_cliente', 'tipo_cliente.id_tipo_cliente', '=', 'cliente.id_tipo_cliente')
         ->join('tipo_facultad', 'tipo_facultad.id_tipo_facultad', '=', 'cliente.id_tipo_facultad')
-        ->paginate(5);
+        ->paginate(10);
     
         return view('cliente.show')->with('clientes',$clientes);
         

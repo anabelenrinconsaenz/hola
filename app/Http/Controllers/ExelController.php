@@ -40,9 +40,30 @@ class ExelController extends Controller
 
     public function importar(Request $request)
     {
-        $file= $request->file('exelLibro');
+        ini_set('memory_limit', '-1');
+        $file= $request->file('exelLibro'); 
 
+        \DB::table('libro')->where('ISBN', '=', 'auxghostybook')->delete();
+        \DB::table('libro')->insert(['ISBN' => 'auxghostybook']);
         Excel::import(new LibroImport, $file);
+        \DB::table('libro')->where('ISBN', '=', 'auxghostybook')->delete();
+        
         return back()->with('mensaje','Importacion completada con exito');
     }
+
+    /*public function importar(Request $request)
+    {
+        $path= $request->file('exelLibro')->getRealPath();
+        $data= Excel::load($path)->get();
+
+        if($data->count() > 0){
+            foreach($data->toArray() as $key => $value){
+                foreach( $value as $row){
+                    $test=$row['B'];
+                }
+            }
+        }
+        return $test;
+        //return back()->with('mensaje','Importacion completada con exito');
+    }*/   
 }

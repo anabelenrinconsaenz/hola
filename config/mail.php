@@ -59,7 +59,7 @@ return [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],*/
-    'from' => ['addres'=>'libreriarectorado@gmail.com','name'=>'Sistema Libreria'],
+    'from' => ['address'=>'libreriarectorado@gmail.com','name'=>'Sistema Libreria'],
 
     /*
     |--------------------------------------------------------------------------

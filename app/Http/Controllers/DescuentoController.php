@@ -12,7 +12,6 @@ class DescuentoController extends Controller
     {
         $descuento=DB::table('descuento')
         ->select('*')
-        ->join('libro', 'libro.ISBN', '=', 'descuento.ISBN')
         ->paginate(10);
         // return response()->json($descuento);
         return view('descuento.mostrar')->with('descuento',$descuento);;
@@ -20,15 +19,15 @@ class DescuentoController extends Controller
 
     public function showFiltrado(Request $request)
     {
-        $descuento=DB::table('descuento')->join('libro', 'libro.ISBN', '=', 'descuento.ISBN')
+        $descuento=DB::table('descuento')
         ->whereBetween('fecha_inicio', [$request->get('fecha_inicio'),$request->get('fecha_final')])
         ->whereBetween('fecha_final', [$request->get('fecha_inicio'),$request->get('fecha_final')])
         ->select('*')->paginate(10);
 
         /*$descuento=\DB::select("SELECT id,descripcion FROM descuento WHERE fecha_inicio BETWEEN $request->get('fecha_inicio') 
         AND $request->get('fecha_final') AND fecha_final BETWEEN $request->get('fecha_inicio') AND 
-        $request->get('fecha_final')")->paginate(10);
-        return view('descuento.mostrar')->with('descuento',$descuento);*/
+        $request->get('fecha_final')")->paginate(10);*/
+        return view('descuento.mostrar')->with('descuento',$descuento);
     }
 
     public function store(Request $request)
@@ -55,7 +54,6 @@ class DescuentoController extends Controller
         ]);*/
         $descuento=DB::table('descuento')
         ->select('*')
-        ->join('libro', 'libro.ISBN', '=', 'descuento.ISBN')
         ->paginate(10);
        // return response()->json($descuento);
         return view('descuento/mostrar')->with('descuento',$descuento);;  
@@ -79,11 +77,11 @@ class DescuentoController extends Controller
         //$datos=DB::table('libro')->where('ISBN', $isbn)->select('cant_deposito','cant_venta')->get();
         foreach($descuento as $d){
             $data["idDescuento"]=$d->idDescuento;
-            $data["ISBN"]=$d->ISBN;
             $data["fecha_inicio"]=$d->fecha_inicio;
             $data["fecha_final"]=$d->fecha_final;
             $data["porcentaje"]=$d->porcentaje;
             $data["descripcion"]=$d->descripcion;
+            $data["idtipo_descuento"]=$d->idtipo_descuento;
         }   
         //return response()->json($data);
         return view('descuento.modificar')->with('data',$data); 
@@ -105,16 +103,21 @@ class DescuentoController extends Controller
          
         DB::table('descuento')
         ->where ('idDescuento',$request->get('idDescuento'))
-        ->update(
-            ['fecha_inicio' => $request->get('fecha_inicio'), 'fecha_final' => $request->get('fecha_final'), 'porcentaje'=>$request->get('porcentaje'),'descripcion'=>$request->get('descripcion'),'idtipo_descuento'=>$request->get('idtipo_descuento'),'ISBN'=>$request->get('ISBN')]
-        );
+        ->update([
+            'fecha_inicio' => $request->get('fecha_inicio'), 
+            'fecha_final' => $request->get('fecha_final'), 
+            'porcentaje'=>$request->get('porcentaje'),
+            'descripcion'=>$request->get('descripcion'),
+            'idtipo_descuento'=>$request->get('idtipo_descuento')
+        ]);
         
         $descuento=DB::table('descuento')
         ->select('*')
-        ->join('libro', 'libro.ISBN', '=', 'descuento.ISBN')
         ->paginate(10);
        // return response()->json($descuento);
-        return view('descuento/mostrar')->with('descuento',$descuento);;
+        //return view('descuento/mostrar')->with('descuento',$descuento);
+        //return View::make('descuento/mostrar')->with('descuento',$descuento);
+        return redirect('descuento')->with('descuento',$descuento);
     }
 
     public function buscarDes(Request $request){
@@ -157,9 +160,9 @@ class DescuentoController extends Controller
         return $libros;
     }
 
-    public function vistaRegistrarDescuento ($ID){
+    public function vistaRegistrarDescuento (){
         $data['tipoDescuento']=DB::table('tipo_descuento')->select('*')->get();
-        $data['ID']=$ID;
+        
         return view('descuento.altaDescuento')->with('data',$data);
     }
 

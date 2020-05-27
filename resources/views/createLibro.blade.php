@@ -6,9 +6,6 @@
 </div>
         
             <div class="container">
-                <!--
-                    Ingreso provisorio de los posibles datos necesarios para agregar un libro
-                -->
                 
                     <div class="row">
                         <div class="col-25">
@@ -108,19 +105,7 @@
 
         <script>
 
-            function showDiv(data) {
-                $("#ele-" + data).addClass('visibleClass');
-                hideElement(1, data);
-            }
-
-            function hideElement(total, active) {
-                for (i = 0; i <= total; i++) {
-                if (i != active)
-                    $("#ele-" + i).removeClass('visibleClass');
-                }
-            }
-
-            function validateForm() {
+            window.addEventListener("load",function validateForm(){
                 var a = document.getElementById("ISBN").value;
                 var b = document.getElementById("titulo").value;
                 var c = document.getElementById("editorial").value;
@@ -136,7 +121,7 @@
                     document.getElementById("btnAgregar").disabled = false;
                 }
                 var refrescar= setTimeout(function(){validateForm()},100);
-            }
+            });
 
 			function guardar(){
 

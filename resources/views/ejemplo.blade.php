@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
     <head>
-        <meta charset="UTF-8">
+        
         <title>Document</title>
+         <meta charset="utf-8">
+         <!-- CON ESTA LINEA LE DOY FORMATO A LA TABLA PERO LOS OTROS DATOS NO SE VEN, SIN LA 
+         LINEA LOS DATOS SE VEN PERO LA TABLA QUEDA FEA-->
+         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        
         <style>
         h1{
         text-align: center;
@@ -20,6 +25,69 @@
         #tercero{
         text-decoration:line-through;
         }
+         .titulo {
+                margin-top: 10px;
+                background-color:#dfdcdd;
+                margin-left: 50px;
+                margin-right: 50px;
+                display: flex;
+            }
+            
+            * {
+                box-sizing: border-box;
+              }
+              input[type=text], select, textarea {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                resize: vertical;
+              }
+              label {
+                padding: 12px 12px 12px 0;
+                display: inline-block;
+              }
+              .visibleClass {
+                display: block !important;
+              } 
+              input[type=submit] {
+                background-color: #4CAF50;
+                color: white;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                float: right;
+              }
+              input[type=submit]:hover {
+                background-color: #45a049;
+              }
+              .container {
+                padding: 20px;
+              }
+              .col-25 {
+                float: left;
+                width: 25%;
+                margin-top: 6px;
+              }
+              .col-75 {
+                float: left;
+                width: 75%;
+                margin-top: 6px;
+              }
+              /* Clear floats after the columns */
+              .row:after {
+                content: "";
+                display: table;
+                clear: both;
+              }
+              /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+              @media screen and (max-width: 600px) {
+                .col-25, .col-75, input[type=submit] {
+                  width: 100%;
+                  margin-top: 0;
+                }
+              }
     </style>
     </head>
     <body>
@@ -28,42 +96,33 @@
 
 <h1 align="center"> Recibo </h1>
 
-<!-- ACA ARRANCA EL FORM PUSE EL ESTILO ACA PORQUE SINO NO ME LO TOMABA-->
-
     <form  action="{{ url ('/imprimir') }}" method="GET" style=" max-width: 60em; height: 40em; background-color:#FDFEA4; ">
-    
-     <div class="row col-xs-12">
-      <b><label for="id_recibo" class="col-xs-6" style="margin: 10px  0px   0px   600px;"> RNº </label> </b>
-
-      <!-- ACA IRIA EL NUMERO DE RECIBO-->
-
-       <input type="text" id="id_recibo" name="id_recibo" class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;" value="{{$data['id_talonario']}}{{$data['id_recibo']}}" />
-       </div>
-      <div class="row col-xs-12">
-       <b> <label for="fecha" class="col-xs-6" style="margin: 10px  0px   0px   600px;"> Fecha </label></b>
-      <input type="text" id="fecha" name="fecha" class="form-control" class="col-xs-6" style= "width:30%; background-color:#FDFEA4;margin: 10px   0px   0px   0px;"  value="{{$data['fecha']}}" />
-     </div>
-
-       
-          <div align="left">
-          <div class="row col-xs-12">
-            <b><label  for="nombre" style= "margin: 0px   0px   0px   40px; font-size:15px; " class="col-xs-6">Nom y Ap/Razon Social: </label></b>
-            <input type="text"  id="nombre" name="nombre" align="left" class="form-control" style= "width:40%; background-color:#FDFEA4; margin: 0px   50px   0px   0px;" class="col-xs-6" value="{{$data['nombre']}}">
-            </div>
-          <div class="row col-xs-12">
-            <b><label for="domicilio" style= "margin: 0px   0px   0px   40px; " class="col-xs-3"> Domicilio: </label></b>
-            <input type="text" id= "domicilio" name="domicilio" class="form-control" class="col-xs-3" style= "width:30%; background-color:#FDFEA4;" value="{{$data['domicilio']}}">
-            <b><label for="dni"  style= "margin: 0px   10px   0px   10px;" class="col-xs-3"> DNI o CUIT: </label></b>
-            <input type="text" id="dni"  name="dni" class="form-control" class="col-xs-3"style= " width:30%;background-color:#FDFEA4;" value="{{$data['dni_cuit']}}">
-          </div>
-          <div class="row col-xs-12">
-            <b><label for="telefono" style= "margin: 0px   10px   0px   40px;"  class="col-xs-3"> Telefono : </label></b> 
-            <input type="text" id="telefono" name="telefono" class="form-control"  class="col-xs-3" style= "  width:30%;background-color:#FDFEA4;" value="{{$data['telefono']}}">  
-            <b><label for="email"  style= "margin: 0px   10px   0px   40px;"  class="col-xs-3"> Email: </label></b>   
-            <input type="text" id="email" name="email" class="form-control"  class="col-xs-3" style= " width:30%; background-color:#FDFEA4;" value="{{$data['email']}}">
-          </div>
-        
-         
+         <table style="border-collapse: separate; border-spacing: 0 10px; width: 100%;">
+         <TR  >
+        <TD colspan="3" aling="right" ><b>  NRº </b></TD>
+        <TD> {{$data['id_talonario']}} -{{$data['id_recibo']}}</TD>
+        </TR>
+        <TR >
+        <TD colspan="3"> <b> Fecha: </b>  </TD>
+        <TD>  {{$data['fecha']}}</TD>
+        </TR>
+        <TR >
+        <TD colspan="3"> <b> Nom y Ap/Razon Social: </b> </TD>
+        <TD>  {{$data['nombre']}}</TD>
+        </TR>
+        <TR >
+        <TD > <b> Domicilio:   </b></TD>
+        <TD colspan="2" >  {{$data['domicilio']}}</TD>
+        <TD ><b> DNI o CUIT:</b> </TD>
+        <TD colspan="2"> {{$data['dni_cuit']}} </TD>
+        </TR>
+        <TR >
+        <TD > <b> Telefono:  </b> </TD>
+        <TD>  {{$data['telefono']}}</TD>
+        <TD> <b>Email: </b></TD>
+        <TD> {{$data['email']}} </TD>
+        </TR>
+        </table>
         <TABLE class="table table-bordered" >
         <thead class="thead-dark">
         <TR align="center" style="border: solid 1px #000000; ">

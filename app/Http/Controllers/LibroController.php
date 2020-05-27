@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
 use App\Notificaciones;
 use App\Http\Controllers\DB;
+use App\LibroxVenta;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Mockery\Matcher\Not;
 
@@ -23,7 +24,7 @@ class LibroController extends Controller
     //VENTAS
 
     public function buscador(Request $request){//SI QUIERO HACERLO POR AUTOR SOLO AGREGO QUE TAMBIEN COMPARE CON AUTOR
-        $librosAJAX=Libro::where("titulo","like",$request->texto."%")->take(2)->get();
+        $librosAJAX=Libro::where("titulo","like","%".$request->texto."%")->take(2)->get();
         return view("paginas",compact("librosAJAX"));
     }
 
@@ -105,7 +106,7 @@ class LibroController extends Controller
 
     public function modificar (Request $request){
 
-        $request->all();
+        //$request->all();
 
         \DB::table('libro')
         ->where('ISBN', $request->get('id'))
@@ -113,27 +114,34 @@ class LibroController extends Controller
             'ISBN' => $request->get('id'),
             'titulo' => $request->get('titulo'),
             'autor' => $request->get('autor'),
-            'editorial' => $request->get('edi'),
-            'cant_venta' => $request->get('vta'),
-            'cant_deposito' => $request->get('dep'),
-            'stock_min' => $request->get('sm'),
-            'precio_estudiante' => $request->get('est'),
-            'precio_general' => $request->get('gra'),
-            'precio_docente' => $request->get('doce')
+            'editorial' => $request->get('editorial'),
+            'cant_venta' => $request->get('venta'),
+            'cant_deposito' => $request->get('deposito'),
+            'stock_min' => $request->get('stock_min'),
+            'precio_estudiante' => $request->get('estudiante'),
+            'precio_general' => $request->get('general'),
+            'precio_docente' => $request->get('docente')
         ]);
         
-        return "Libro modificado con exito!";
+        //return "Libro modificado con exito!";
+        
+        return redirect('paginaprincipal');
     }
 
     public function agregarStock (Request $request){
 
+        //$x = "\"".$request->get('id')."\"";
         \DB::table('libro')
         ->where('ISBN',$request->get('id'))
         ->update([
             'cant_deposito' => $request->get('cant_deposito') + $request->get('stock')
         ]);
 
-        return "Depósito actualizado";
+        //return $x;
+        return "Deposito actualizado!";
+
+        /*$x = "\"".$request->get('id')."\"";
+        return response()->json($x);*/
     }
 
     /**
@@ -275,14 +283,16 @@ class LibroController extends Controller
     {
         
        $totalLibros=Libro::orderBy('titulo','ASC')->paginate(10);
+       $LibrosxVentas=LibroxVenta::all();
+
        $this->altaNotificar(); //SE CARGAN LAS NOTIFICACIONES NUEVAS
-        return view('listarLibros',compact('totalLibros'));
+        return view('listarLibros',compact('totalLibros','LibrosxVentas'));
     
     }
 
     public function paginaprincipalBuscador(Request $request) //BUSCADOR DE PAGINA PRINCIPAL POR TEXTO
     {
-        $totalLibros=Libro::where("titulo","like","%".$request->texto."%")->orWhere("editorial","like","%".$request->texto."%")->orWhere("autor","like","%".$request->texto."%")->take(2)->get();
+        $totalLibros=Libro::where("titulo","like","%".$request->texto."%")->orWhere("editorial","like","%".$request->texto."%")->orWhere("autor","like","%".$request->texto."%")->take(10)->get();
         return view("paginaprincipal",compact('totalLibros'));
     }
 

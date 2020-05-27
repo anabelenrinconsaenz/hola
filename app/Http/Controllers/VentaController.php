@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\DB;
 
-
 use App\LibroxVenta;
 use App\Talonario;
 
@@ -28,7 +27,7 @@ class VentaController extends Controller
      */
     public function index() //NUEVA VENTA
     {
-        $datos['libros']=Libro::paginate();
+        $datos['libros']=Libro::all();
 
         $cliente['datos']=Cliente::paginate();
         
@@ -43,19 +42,18 @@ class VentaController extends Controller
 
 public function Ventas(){//TODAS LAS VENTAS
 
-    $totalVentas['totalVentas']=Venta::all();
+    //$totalVentas['totalVentas']=Venta::all();
+$totalVentas=Venta::orderBy('idVenta','DESC')->paginate(7);
+  $totalLibroxVenta=LibroxVenta::all();
+    $descuentos=Descuento::all();
 
-    $totalLibroxVenta['totalLibroxVenta']=LibroxVenta::all();
-    $Descuentos['descuentos']=Descuento::all();
 
-    $Libros['libros']=Libro::all();
-
-    $Clientes['clientes']=Cliente::all();
-
+    $clientes=Cliente::all();
 
 
 
-  return view('Ventas')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
+
+  return view('Ventas',compact('totalVentas','totalLibroxVenta','descuentos','clientes'));
 
 }
 
@@ -63,12 +61,38 @@ public function Ventas(){//TODAS LAS VENTAS
 
 
 //BORRAR VENTA
+public function eliminarVenta(Request $request){
+        
+  
+  
+        $idVenta=$request->idVenta;
+          
+        $libroxventa=LibroxVenta::where('idVenta',$idVenta)->first(); 
+        $venta=Venta::where('idVenta',$idVenta)->first();
+  
+        if($libroxventa) {
+          $libroxventa->delete();
+          }
+          
+          if($venta) {
+              $venta->delete();
+          }
+                  
+          return "Venta Eliminada!";
+
+  
+  
+      
+}
 
 
-//RECIBO UN DATO ADICIONAL QUE INDICA EL EVENTO A REALIZAR
-public function deleteVenta(Request $request){
 
-   $evento=$request->evento;
+
+
+
+public function modificarVenta(Request $request){
+
+   $evento=$request->evento;//YA NO SERIA NECESARIO EL EVENTO
 
     if($evento=="MODIFICAR_VENTA"){ //CARGO LOS DATOS EN EL FORMULARIO
       /*####*/
@@ -89,27 +113,7 @@ public function deleteVenta(Request $request){
 
     }
     
-    if($evento=="ELIMINAR_VENTA"){ //ELIMINO UNA VENTA CON SU IDVENTA
-      /*####*/
-
-
-      $idVenta=$request->idVenta;
-        
-      $libroxventa=LibroxVenta::where('idVenta',$idVenta)->first(); 
-      $venta=Venta::where('idVenta',$idVenta)->first();
-
-      if($libroxventa) {
-        $libroxventa->delete();
-        }
-        
-        if($venta) {
-            $venta->delete();
-        }
-                
-        return redirect('/todasVentas')->with('success', 'Stock has been deleted Successfully');
-
-
-    }
+    
 
 }
 
@@ -137,46 +141,45 @@ public function updateVenta(Request $request){ //MODIFICO VENTAS
                     $total=$total+((100-$idDescuento->porcentaje)*$subtotal)/100;
 
 
-                
-
-                    //MODIFICO LAS CANTIDADES DE LIBROS VENDIDAS (CANT_VENTAS)
-
-                    $antes=Libro::where('ISBN',$id)->first();
                     $antesVentas=LibroxVenta::where('ISBN',$id)->first();
 
-                    if($antesVentas->cant>=$request->cantidad[$key]){//VENDI MENOS QUE ANTES
+                    $diferencia=$antesVentas->cant-$request->cantidad[$key];
 
-                        $diferencia=$antesVentas->cant-$request->cantidad[$key];
-                        $cant_venta=$antes->cant_venta-$diferencia;//CANTIDAD VENDIDA
+                    if($diferencia!=0){ //SI ES CERO PUEDE SER QUE NO HAYA QUERIDO HACER CAMBIOS, O QUE EL LIBRO YA NO EXISTA Y NO SE LE HAYA PERMITIDO HACERLOS
 
-                        $cant_deposito=$antes->cant_deposito+$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
+
+                            //MODIFICO LAS CANTIDADES DE LIBROS VENDIDAS (CANT_VENTAS)
+
+                            $antes=Libro::where('ISBN',$id)->first();
+
+                            if($antesVentas->cant>=$request->cantidad[$key]){//VENDI MENOS QUE ANTES
+
+                            $diferencia=$antesVentas->cant-$request->cantidad[$key];
+                            $cant_venta=$antes->cant_venta-$diferencia;//CANTIDAD VENDIDA
+
+                            $cant_deposito=$antes->cant_deposito+$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
+                            }
+
+                        if($antesVentas->cant<$request->cantidad[$key]){//VENDI MAYOR CANTIDAD QUE ANTES
+                        
+                                        $diferencia=$request->cantidad[$key]-$antesVentas->cant;
+
+                                    $cant_venta=$antes->cant_venta+$diferencia;//CANTIDAD VENDIDA
+
+                                    $cant_deposito=$antes->cant_deposito-$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
+                            }
+
+                                \DB::table('libro')
+                                ->where('ISBN', $id)
+                                ->update([
+                                'cant_venta' =>$cant_venta,
+                                'cant_deposito' => $cant_deposito
+                                ]);
+
                     }
-
-                    if($antesVentas->cant<$request->cantidad[$key]){//VENDI MAYOR CANTIDAD QUE ANTES
-                    
-                        $diferencia=$request->cantidad[$key]-$antesVentas->cant;
-
-                    $cant_venta=$antes->cant_venta+$diferencia;//CANTIDAD VENDIDA
-
-                    $cant_deposito=$antes->cant_deposito-$diferencia;//CANTIDAD QUE ME QUEDA EN DEPOSITO
-                    }
-                    \DB::table('libro')
-                    ->where('ISBN', $id)
-                    ->update([
-                    'cant_venta' =>$cant_venta,
-                    'cant_deposito' => $cant_deposito
-                    ]);
-
-
 
                 }
                 
-
-
-
-
-
-
 
         //TABLA VENTA
         \DB::table('venta')
@@ -397,13 +400,17 @@ public function updateVenta(Request $request){ //MODIFICO VENTAS
             }
 
 
+
             \DB::table('libroxventa')->insert(
             ['ISBN' => $libro->ISBN, 
             'idVenta' => $libro->idVenta, 
             'cant' => $libro->cant, 
             'IdDescuento' => $request->idDescuento[$key], 
-            'precio_unitario' => $libro->precio_unitario
+            'precio_unitario' => $libro->precio_unitario,
+            'titulo' => $request->TITULOtabla[$key]
             ]);
+
+
             //ana
             $titulo=\DB::table('libro')->select('titulo')->where("ISBN","=",$libro->ISBN)->get();
             $info[$i]["ISBN"]=$id;
@@ -492,20 +499,18 @@ public function updateVenta(Request $request){ //MODIFICO VENTAS
     public function buscadorTodasVentas(Request $request){
     
       
+        $totalVentas=Venta::orderBy('idVenta','DESC')->paginate(7);
 
-            
-        $totalVentas['totalVentas']=Venta::all();
-
-        $totalLibroxVenta['totalLibroxVenta']=LibroxVenta::all();
-        $Descuentos['descuentos']=Descuento::all();
-
-        $Libros['libros']=Libro::all();
-
-        $Clientes['clientes']=Cliente::all();
+    
+        $totalLibroxVenta=LibroxVenta::all();
+        $descuentos=Descuento::all();
 
 
+        $clientes=Cliente::all();
 
-        return view('TodasVentasAJAX')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
+      
+
+        return view('TodasVentasAJAX',compact('totalVentas','totalLibroxVenta','descuentos','clientes'));
 
     }
 
@@ -514,19 +519,18 @@ public function updateVenta(Request $request){ //MODIFICO VENTAS
 
 
     public function buscadorClientexventa(Request $request){
-        $totalVentas['totalVentas']=Venta::all();
+        $totalVentas=Venta::all();
 
-        $totalLibroxVenta['totalLibroxVenta']=LibroxVenta::all();
-        $Descuentos['descuentos']=Descuento::all();
+        $totalLibroxVenta=LibroxVenta::all();
+        $descuentos=Descuento::all();
 
-        $Libros['libros']=Libro::all();
 
-        $Clientes['clientes']=Cliente::where("nombre_apellido","like","%".$request->texto."%")->take(2)->get();
-
+        $clientes=Cliente::where("nombre_apellido","like","%".$request->texto."%")->take(2)->get();
+        //$totalVentas=Venta::orderBy('idVenta','DESC')->paginate(7);
 
         //return view("paginaprincipal",compact('totalLibros'));
 
-        return view('paginasClientexVentas')->with($totalVentas)->with($totalLibroxVenta)->with($Descuentos)->with($Libros)->with($Clientes);
+        return view('paginasClientexVentas',compact('totalVentas','totalLibroxVenta','descuentos','clientes'));
 
         
     }

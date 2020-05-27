@@ -16,9 +16,6 @@
 	</div>
 </div>
 
-
-
-
 <div style="margin-left: 50px;margin-right: 50px;margin-top: 10px;background-color: white">
 
 
@@ -67,7 +64,7 @@
                     </i>
                 </a>
                 |
-                <a data-toggle="modal" href="#" onclick="borrar({{$i->ISBN}})" style="text-decoration:none;color:black;">
+                <a data-toggle="modal" href="#" onclick="borrar('{{$i->ISBN}}')" style="text-decoration:none;color:black;">
                     <i class='fas fa-trash-alt' style='color:#d9534f;'>
                         <font face="Arial,MS Sans Serif" size="2">
                             Eliminar
@@ -96,31 +93,83 @@
 
           <!-- Modal body -->
           <div class="modal-body">
-            <div class="row">
-              <div class="col-25">
-                <label for="id" style="padding-left: 10px">ISBN - ISSN</label>
+              <div class="row">
+                <div class="col-25">
+                  <label for="id" style="padding-left: 10px">ISBN - ISSN</label>
+                </div>
+                <div class="col-75">
+                  <input type="text" name="ISBN" value="{{ $i->ISBN }}" style="width: 100%;padding: 12px;border: 1px solid #ccc;border-radius: 4px;resize: vertical;" readonly>
+                </div>
               </div>
-              <div class="col-75">
-                <input type="text" name="ISBN" value="{{ $i->ISBN }}" style="width: 100%;padding: 12px;border: 1px solid #ccc;border-radius: 4px;resize: vertical;" readonly>
+
+                <div class="row">
+                  <div class="col-25">
+                    <label for="id" style="padding-left: 10px">Venta</label>
+                  </div>
+                  <div class="col-75">
+                    <input type="text" name="cant_venta" value="{{ $i->cant_venta }}" style="width: 100%;padding: 12px;border: 1px solid #ccc;border-radius: 4px;resize: vertical;" readonly>
+                  </div>
+                </div>
+
+              <div class="row">
+                <div class="col-25">
+                  <label for="id" style="padding-left: 10px">Stock minimo</label>
+                </div>
+                <div class="col-75">
+                  <input type="text" name="stock_min" value="{{ $i->stock_min }}" style="width: 100%;padding: 12px;border: 1px solid #ccc;border-radius: 4px;resize: vertical;" readonly>
+                </div>
               </div>
+
+
+          
+
+              
+          <?php 
+                  $fecha = now()->toDateString();
+                  $mes = date('m');  //FECHA ACTUAL
+                  $anio = date('Y'); //FECHA ACTUAL
+
+                  $librosventa=\DB::table('libroxventa')->where("ISBN","=",$i->ISBN)->get(); //obtengo todas las ventas de ese libro
+
+                  $cant=0;
+
+                  foreach($librosventa as $libroventa){
+
+                         $venta=\DB::table('venta')->where("idVenta","=",$libroventa->idVenta)->get()->first();
+                                $fechaComoEntero = strtotime($venta->fecha); //paso la fecha de la venta a entero
+                                $anioventa = date("Y", $fechaComoEntero);
+                                $mesventa = date("m", $fechaComoEntero);
+      
+      
+                                if($mes==$mesventa && $anio==$anioventa){ //si la venta es del mes y año actual
+                                  $cant=$cant+$libroventa->cant; 
+                                }
+                      
+                  }
+                      
+         ?>
+                            <!--VENTA MENSUAL-->
+                            <div class="row">
+                                <div class="col-25">
+                                  <label for="id" style="padding-left: 10px">Venta Mensual</label>
+                                </div>
+                                <div class="col-75">
+                              
+                                  <input type="text" name="ventamensual" value=<?php echo $cant; ?> style="width: 100%;padding: 12px;border: 1px solid #ccc;border-radius: 4px;resize: vertical;" readonly>
+                                </div>
+                            </div>
+
+
+   
+
+
+
+
+
+
+
             </div>
-            <div class="row">
-              <div class="col-25">
-                <label for="id" style="padding-left: 10px">Venta</label>
-              </div>
-              <div class="col-75">
-                <input type="text" name="cant_venta" value="{{ $i->cant_venta }}" style="width: 100%;padding: 12px;border: 1px solid #ccc;border-radius: 4px;resize: vertical;" readonly>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-25">
-                <label for="id" style="padding-left: 10px">Stock minimo</label>
-              </div>
-              <div class="col-75">
-                <input type="text" name="stock_min" value="{{ $i->stock_min }}" style="width: 100%;padding: 12px;border: 1px solid #ccc;border-radius: 4px;resize: vertical;" readonly>
-              </div>
-            </div>
-          </div>
+
 
             </div>
           </div>
@@ -145,7 +194,7 @@
 
             <!-- Modal footer -->
             <div class="modal-footer">
-              <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="modificarStock({{$i->ISBN}},{{$i->cant_deposito}})">Guardar</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="modificarStock('{{$i->ISBN}}',{{$i->cant_deposito}})">Guardar</button>
             </div>
 
           </div>
@@ -221,22 +270,22 @@
                 });*/
 
                 if(document.getElementById("texto").value.length>0){
-                fetch(`/paginaprincipalBuscador?texto=${document.getElementById("texto").value}`,{
-                  method:'get'
-                })
-                .then(response => response.text())
-                .then(html => {
-                  document.getElementById("resultados").innerHTML = html
-                })
-                }else{
-                  fetch(`/todos`,{
-                    method:'get'
-                  })
-                  .then(response => response.text())
-                  .then(html => {
-                    document.getElementById("resultados").innerHTML = html
-                  })
-                }
+                          fetch(`/paginaprincipalBuscador?texto=${document.getElementById("texto").value}`,{
+                            method:'get'
+                          })
+                          .then(response => response.text())
+                          .then(html => {
+                            document.getElementById("resultados").innerHTML = html
+                          })
+                        }else{
+                          fetch(`/todos?page={{$totalLibros->currentPage()}}`,{
+                            method:'get'
+                          })
+                          .then(response => response.text())
+                          .then(html => {
+                            document.getElementById("resultados").innerHTML = html
+                          })
+                        }
 
               }});
                 
@@ -244,12 +293,12 @@
   }
 
   function modificarStock(id,cant_deposito){
-
+    
     stock=document.getElementById("stock"+id).value;
-
+    
     $.ajax({url: "{{url('/modificarStock')}}",data:{"id":id,"cant_deposito":cant_deposito,"stock":stock}, 
                 success: function(resultado){
-      
+          //document.write(resultado);
           /*Swal.fire({
             position: 'center',
             type: 'success',
@@ -259,22 +308,22 @@
           });*/
 
           if(document.getElementById("texto").value.length>0){
-          fetch(`/paginaprincipalBuscador?texto=${document.getElementById("texto").value}`,{
-            method:'get'
-          })
-          .then(response => response.text())
-          .then(html => {
-            document.getElementById("resultados").innerHTML = html
-          })
-          }else{
-            fetch(`/todos`,{
-              method:'get'
-            })
-            .then(response => response.text())
-            .then(html => {
-              document.getElementById("resultados").innerHTML = html
-            })
-          }
+                          fetch(`/paginaprincipalBuscador?texto=${document.getElementById("texto").value}`,{
+                            method:'get'
+                          })
+                          .then(response => response.text())
+                          .then(html => {
+                            document.getElementById("resultados").innerHTML = html
+                          })
+                        }else{
+                          fetch(`/todos?page={{$totalLibros->currentPage()}}`,{
+                            method:'get'
+                          })
+                          .then(response => response.text())
+                          .then(html => {
+                            document.getElementById("resultados").innerHTML = html
+                          })
+                        }
 
         }});
   }

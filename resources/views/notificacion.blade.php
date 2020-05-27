@@ -18,16 +18,16 @@
       </div>
       <div class="card-footer">
    
-    <button type="submit" class="btn btn-danger" > <a style="color: white;  padding: 1.5px;" href="{{ url ('bajaNotificacion',[$li->ISBN]) }}">Eliminar Notificacion</a></button>
+    <button type="submit" class="btn btn-danger btn-block" > <a style="color: white;  padding: 1.5px;text-decoration: none" href="{{ url ('bajaNotificacion',[$li->ISBN]) }}">Eliminar notificación</a></button>
   
    @if($li->leido==0)
-   <BR>
-    <button type="submit" class="btn btn-success" > <a style="color: white;  padding: 1.5px;" href="{{ url ('modificarNotificacion',[$li->ISBN]) }}">Marcar como Leido</a></button>
+  
+    <button type="submit" class="btn btn-success btn-block" > <a style="color: white;  padding: 1.5px;text-decoration: none" href="{{ url ('modificarNotificacion',[$li->ISBN]) }}">Marcar como leído</a></button>
     @endif
    
    @if($li->leido==1)
-   <BR>
-       <button type="submit" class="btn btn-success" disabled> Leido</button>
+   
+       <button type="submit" class="btn btn-success btn-block" disabled> Leído</button>
    @endif
 
     </div>  
